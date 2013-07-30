@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service id="factory"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory">
+        </service>
+
+        <service id="product_from_factory"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Product"
+                 factory-service="factory"
+                 factory-method="create">
+            <argument>string argument</argument>
+        </service>
+
+        <service id="shared_product"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Product">
+            <argument type="service" id="shared_price" />
+        </service>
+
+        <service id="shared_price"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Price">
+            <!-- has optional argument -->
+            <call method="setCurrency">
+                <argument>dollar</argument>
+            </call>
+        </service>
+
+    </services>
+</container>

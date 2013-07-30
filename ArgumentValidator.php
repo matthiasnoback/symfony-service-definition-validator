@@ -58,6 +58,10 @@ class ArgumentValidator implements ArgumentValidatorInterface
             return;
         }
 
+        if ($className === $resultingClass) {
+            return;
+        }
+
         $reflectionClass = new \ReflectionClass($resultingClass);
         if (!$reflectionClass->isSubclassOf($className)) {
             throw new TypeHintMismatchException(sprintf(

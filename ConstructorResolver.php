@@ -10,10 +10,15 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 class ConstructorResolver implements ConstructorResolverInterface
 {
     private $containerBuilder;
+    private $resultingClassResolver;
 
-    public function __construct(ContainerBuilder $containerBuilder)
+    public function __construct(
+        ContainerBuilder $containerBuilder,
+        ResultingClassResolverInterface $resultingClassResolver
+    )
     {
         $this->containerBuilder = $containerBuilder;
+        $this->resultingClassResolver = $resultingClassResolver;
     }
 
     public function resolve(Definition $definition)
@@ -23,6 +28,18 @@ class ConstructorResolver implements ConstructorResolverInterface
             if (!class_exists($factoryClass)) {
                 throw new ClassNotFoundException($factoryClass);
             }
+
+            $factoryMethod = $this->resolvePlaceholders($definition->getFactoryMethod());
+            if (!method_exists($factoryClass, $factoryMethod)) {
+                throw new MethodNotFoundException($factoryClass, $factoryMethod);
+            }
+
+            return new \ReflectionMethod($factoryClass, $factoryMethod);
+        } elseif ($definition->getFactoryService() && $definition->getFactoryMethod()) {
+            $factoryServiceId = $this->resolvePlaceholders($definition->getFactoryService());
+            $factoryDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
+
+            $factoryClass = $this->resultingClassResolver->resolve($factoryDefinition);
 
             $factoryMethod = $this->resolvePlaceholders($definition->getFactoryMethod());
             if (!method_exists($factoryClass, $factoryMethod)) {
