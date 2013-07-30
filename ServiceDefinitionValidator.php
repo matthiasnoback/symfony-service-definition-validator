@@ -6,22 +6,25 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
 {
     private $containerBuilder;
-    private $constructorResolver;
+    private $definitionArgumentsValidator;
+    private $methodCallsValidator;
 
-    public function __construct(ContainerBuilder $containerBuilder)
+    public function __construct(
+        ContainerBuilder $containerBuilder,
+        DefinitionArgumentsValidatorInterface $definitionArgumentsValidator,
+        MethodCallsValidatorInterface $methodCallsValidator
+    )
     {
         $this->containerBuilder = $containerBuilder;
-
-        $argumentValidator = new ArgumentValidator($containerBuilder, new ResultingClassResolver());
-        $this->argumentsValidator = new ArgumentsValidator($argumentValidator);
-        $this->constructorResolver = new ConstructorResolver($containerBuilder);
+        $this->definitionArgumentsValidator = $definitionArgumentsValidator;
+        $this->methodCallsValidator = $methodCallsValidator;
     }
 
     public function validate(Definition $definition)
@@ -29,6 +32,8 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         $this->validateAttributes($definition);
 
         $this->validateArguments($definition);
+
+        $this->validateMethodCalls($definition);
     }
 
     public function validateAttributes(Definition $definition)
@@ -42,22 +47,12 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
 
     public function validateArguments(Definition $definition)
     {
-        if ($definition->isAbstract()) {
-            return;
-        }
+        $this->definitionArgumentsValidator->validate($definition);
+    }
 
-        if ($definition->isSynthetic()) {
-            return;
-        }
-
-        $constructor = $this->constructorResolver->resolve($definition);
-        if ($constructor === null) {
-            return;
-        }
-
-        $definitionArguments = $definition->getArguments();
-
-        $this->argumentsValidator->validate($constructor, $definitionArguments);
+    private function validateMethodCalls(Definition $definition)
+    {
+        $this->methodCallsValidator->validate($definition);
     }
 
     private function validateClass(Definition $definition)
@@ -111,7 +106,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
             throw new ServiceNotFoundException($factoryServiceId);
         }
 
-        $factoryServiceDefinition = $this->containerBuilder->getDefinition($factoryServiceId);
+        $factoryServiceDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
         $factoryClass = $factoryServiceDefinition->getClass();
 
         $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);

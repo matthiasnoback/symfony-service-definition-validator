@@ -2,9 +2,8 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
-use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException;
-use Matthias\SymfonyServiceDefinitionValidator\Exception\MissingRequiredArgumentException;
+use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -14,7 +13,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $definition = new Definition();
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException');
         $validator->validate($definition);
@@ -25,7 +28,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition('%class_name%');
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->setParameter('class_name', '\stdClass');
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         $validator->validate($definition);
     }
@@ -35,7 +42,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition();
         $definition->setSynthetic(true);
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         try {
             $validator->validate($definition);
@@ -49,7 +60,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition();
         $definition->setAbstract(true);
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         try {
             $validator->validate($definition);
@@ -62,7 +77,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $definition = new Definition($this->getNonExistingClassName());
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $validator->validate($definition);
@@ -74,7 +93,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $definition->setFactoryClass($this->getNonExistingClassName());
         $definition->setFactoryMethod('create');
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $validator->validate($definition);
@@ -86,42 +109,91 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $definition->setFactoryClass('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
         $definition->setFactoryMethod('nonExistingFactoryMethod');
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
         $validator->validate($definition);
     }
 
-    public function testSkipsArgumentValidationForAbstractDefinition()
+    /**
+     * @test
+     */
+    public function ifFactoryServiceIsSpecifiedWithoutFactoryMethodFails()
     {
-        $definition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithRequiredConstructorArguments');
-        $definition->setAbstract(true);
+        $definition = new Definition('stdClass');
+        $definition->setFactoryService('factory_service');
 
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
 
-        try {
-            $validator->validateArguments($definition);
-        } catch (MissingRequiredArgumentException $exception) {
-            $this->fail('Should not have failed');
-        }
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
+        $validator->validate($definition);
     }
 
-    public function testValidatesArgumentsForFactoryClassAndMethod()
+    /**
+     * @test
+     */
+    public function ifFactoryServiceDoesNotExistFails()
     {
-        $definition = new Definition();
-        $definition->setFactoryClass('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
-        $definition->setFactoryMethod('createWithRequiredArgument');
+        $definition = new Definition('stdClass');
+        $definition->setFactoryService('factory_service');
+        $definition->setFactoryMethod('factoryMethod');
 
         $containerBuilder = new ContainerBuilder();
-        $validator = new ServiceDefinitionValidator($containerBuilder);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingRequiredArgumentException');
-        $validator->validateArguments($definition);
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException');
+        $validator->validate($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function ifFactoryMethodDoesNotExistOnFactoryServiceFails()
+    {
+        $containerBuilder = new ContainerBuilder();
+        $factoryDefinition = new Definition('stdClass');
+        $containerBuilder->setDefinition('factory_service', $factoryDefinition);
+
+        $definition = new Definition('stdClass');
+        $definition->setFactoryService('factory_service');
+        $definition->setFactoryMethod('nonExistingFactoryMethod');
+
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
+        $validator->validate($definition);
     }
 
     private function getNonExistingClassName()
     {
         return md5(rand(1, 999));
+    }
+
+    private function createMockDefinitionArgumentsValidator()
+    {
+        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface');
+    }
+
+    private function createMockMethodCallsValidator()
+    {
+        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface');
     }
 }

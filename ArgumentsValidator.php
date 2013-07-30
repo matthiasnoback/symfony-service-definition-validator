@@ -13,7 +13,7 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
         $this->argumentValidator = $argumentValidator;
     }
 
-    public function validate(\ReflectionMethod $method, $arguments)
+    public function validate(\ReflectionMethod $method, array $arguments)
     {
         foreach ($method->getParameters() as $parameterNumber => $parameter) {
             $argument = $this->resolveArgument($parameterNumber, $parameter, $arguments);
@@ -23,24 +23,17 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
 
     /**
      * Find the argument by the numeric index of the given parameter
-     *
-     * @param $parameterIndex
-     * @param \ReflectionParameter $parameter
-     * @param array $definitionArguments
-     * @return mixed
-     * @throws Exception\MissingRequiredArgumentException
      */
-    private function resolveArgument($parameterIndex, \ReflectionParameter $parameter, array $definitionArguments)
+    private function resolveArgument($parameterIndex, \ReflectionParameter $parameter, array $arguments)
     {
-        if (array_key_exists($parameterIndex, $definitionArguments)) {
-            return $definitionArguments[$parameterIndex];
+        if (array_key_exists($parameterIndex, $arguments)) {
+            return $arguments[$parameterIndex];
         }
 
         if (!$parameter->isOptional()) {
             throw new MissingRequiredArgumentException($parameter->getDeclaringClass()->getName(), $parameter->getName());
         }
 
-        // TODO test this
         return null;
     }
 }

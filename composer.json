@@ -16,6 +16,7 @@
         "symfony/dependency-injection": "2.*"
     },
     "require-dev": {
+        "symfony/config": "2.*",
         "phpunit/phpunit": "3.7.*"
     },
     "target-dir": "Matthias/SymfonyServiceDefinitionValidator",

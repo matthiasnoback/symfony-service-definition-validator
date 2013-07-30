@@ -12,7 +12,7 @@ class ArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function ifRequiredArgumentIsMissingFails()
     {
-        $validator = new ArgumentsValidator($this->getMockArgumentValidator());
+        $validator = new ArgumentsValidator($this->createMockArgumentValidator());
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithRequiredConstructorArguments';
         $method = new \ReflectionMethod($class, '__construct');
 
@@ -21,7 +21,7 @@ class ArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($method, array('argument1'));
     }
 
-    private function getMockArgumentValidator()
+    private function createMockArgumentValidator()
     {
         return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ArgumentValidatorInterface');
     }
