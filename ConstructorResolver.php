@@ -2,10 +2,10 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator;
 
+use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 
 class ConstructorResolver implements ConstructorResolverInterface
 {
@@ -24,39 +24,58 @@ class ConstructorResolver implements ConstructorResolverInterface
     public function resolve(Definition $definition)
     {
         if ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
-            $factoryClass = $this->resolvePlaceholders($definition->getFactoryClass());
-            if (!class_exists($factoryClass)) {
-                throw new ClassNotFoundException($factoryClass);
-            }
-
-            $factoryMethod = $this->resolvePlaceholders($definition->getFactoryMethod());
-            if (!method_exists($factoryClass, $factoryMethod)) {
-                throw new MethodNotFoundException($factoryClass, $factoryMethod);
-            }
-
-            return new \ReflectionMethod($factoryClass, $factoryMethod);
+            return $this->resolveFactoryClassWithMethod(
+                $definition->getFactoryClass(),
+                $definition->getFactoryMethod()
+            );
         } elseif ($definition->getFactoryService() && $definition->getFactoryMethod()) {
-            $factoryServiceId = $this->resolvePlaceholders($definition->getFactoryService());
-            $factoryDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
+            return $this->resolveFactoryServiceWithMethod(
+                $definition->getFactoryService(),
+                $definition->getFactoryMethod()
+            );
+        } elseif ($definition->getClass()) {
+            return $this->resolveClassWithConstructor($definition->getClass());
+        }
 
-            $factoryClass = $this->resultingClassResolver->resolve($factoryDefinition);
+        return null;
+    }
 
-            $factoryMethod = $this->resolvePlaceholders($definition->getFactoryMethod());
-            if (!method_exists($factoryClass, $factoryMethod)) {
-                throw new MethodNotFoundException($factoryClass, $factoryMethod);
-            }
+    private function resolveFactoryClassWithMethod($factoryClass, $factoryMethod)
+    {
+        if (!class_exists($factoryClass)) {
+            throw new ClassNotFoundException($factoryClass);
+        }
 
-            return new \ReflectionMethod($factoryClass, $factoryMethod);
-        } else {
-            $class = $this->resolvePlaceholders($definition->getClass());
+        if (!method_exists($factoryClass, $factoryMethod)) {
+            throw new MethodNotFoundException($factoryClass, $factoryMethod);
+        }
 
-            $reflectionClass = new \ReflectionClass($class);
+        return new \ReflectionMethod($factoryClass, $factoryMethod);
+    }
 
-            if ($reflectionClass->hasMethod('__construct')) {
-                $constructMethod = $reflectionClass->getMethod('__construct');
-                if ($constructMethod->isPublic()) {
-                    return $constructMethod;
-                }
+    private function resolveFactoryServiceWithMethod($factoryServiceId, $factoryMethod)
+    {
+        $factoryDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
+
+        $factoryClass = $this->resultingClassResolver->resolve($factoryDefinition);
+
+        if (!method_exists($factoryClass, $factoryMethod)) {
+            throw new MethodNotFoundException($factoryClass, $factoryMethod);
+        }
+
+        return new \ReflectionMethod($factoryClass, $factoryMethod);
+    }
+
+    private function resolveClassWithConstructor($class)
+    {
+        $class = $this->resolvePlaceholders($class);
+
+        $reflectionClass = new \ReflectionClass($class);
+
+        if ($reflectionClass->hasMethod('__construct')) {
+            $constructMethod = $reflectionClass->getMethod('__construct');
+            if ($constructMethod->isPublic()) {
+                return $constructMethod;
             }
         }
 

@@ -26,27 +26,25 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $this->container = new ContainerBuilder();
 
-        $resultingClassResolver = new ResultingClassResolver();
-        $constructorResolver = new ConstructorResolver($this->container, $resultingClassResolver);
-        $argumentValidator = new ArgumentValidator($this->container, $resultingClassResolver);
-        $argumentsValidator = new ArgumentsValidator($argumentValidator);
-        $definitionArgumentsValidator = new DefinitionArgumentsValidator($constructorResolver, $argumentsValidator);
-        $methodCallsValidator = new MethodCallsValidator($resultingClassResolver, $argumentsValidator);
-        $validator = new ServiceDefinitionValidator($this->container, $definitionArgumentsValidator, $methodCallsValidator);
-
-        $compilerPass = new ValidateServiceDefinitionsPass($validator);
+        $compilerPass = new ValidateServiceDefinitionsPass();
 
         $this->container->addCompilerPass($compilerPass, PassConfig::TYPE_AFTER_REMOVING);
     }
 
-    /**
-     * @test
-     */
-    public function ifTheServiceDefinitionsAreCorrectTheContainerWillBeCompiled()
+    public function testIfTheServiceDefinitionsAreCorrectTheContainerWillBeCompiled()
     {
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__.'/Fixtures'));
         $loader->load('correct_service_definitions.xml');
 
+        $this->container->compile();
+    }
+
+    public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()
+    {
+        $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__.'/Fixtures'));
+        $loader->load('incorrect_service_definitions.xml');
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidServiceDefinitionsException');
         $this->container->compile();
     }
 }
