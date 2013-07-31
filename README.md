@@ -64,7 +64,7 @@ The resulting error list will contain errors about problematic service definitio
 ### Compiler pass
 
 To check for the validity of all your service definitions at compile time, add this compiler pass
-to the `ContainerBuilder`` instance:
+to the `ContainerBuilder` instance:
 
     <?php
 
