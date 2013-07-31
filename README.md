@@ -63,8 +63,8 @@ The resulting error list will contain errors about problematic service definitio
 
 ### Compiler pass
 
-To check for the validity of all your service definitions at compile time, add this compiler pass
-to the `ContainerBuilder`` instance:
+To check for the validity of all your service definitions at compile time, add the `ValidateServiceDefinitionsPass`
+compiler pass to the `ContainerBuilder` instance:
 
     <?php
 
@@ -74,7 +74,7 @@ to the `ContainerBuilder`` instance:
     {
         public function build(ContainerBuilder $container)
         {
-            $container->addCompilerPass();
+            $container->addCompilerPass(new ValidateServiceDefinitionsPass());
         }
     }
 
