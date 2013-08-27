@@ -14,7 +14,8 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function ifConstructorDoesNotExistResolvedConstructorIsNull()
     {
-        $resolver = new ConstructorResolver(new ContainerBuilder(), new ResultingClassResolver());
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
         // stdClass has no constructor
         $definition = new Definition('stdClass');
@@ -27,7 +28,8 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function ifConstructorExistsResolvedConstructorIsConstructorMethod()
     {
-        $resolver = new ConstructorResolver(new ContainerBuilder(), new ResultingClassResolver());
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
         // stdClass has a constructor
         $definition = new Definition('\DateTime');
@@ -41,7 +43,8 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function ifConstructorIsNotPublicResolvedConstructorIsNull()
     {
-        $resolver = new ConstructorResolver(new ContainerBuilder(), new ResultingClassResolver());
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
         // stdClass has a constructor
         $definition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithNonPublicConstructor');
@@ -54,7 +57,8 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function ifFactoryClassAndFactoryMethodAreDefinedResolvedConstructorIsFactoryMethod()
     {
-        $resolver = new ConstructorResolver(new ContainerBuilder(), new ResultingClassResolver());
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
         $definition = new Definition();
         $factoryClass = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass';
@@ -71,7 +75,8 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
      */
     public function ifFactoryClassDoesNotExistFails()
     {
-        $resolver = new ConstructorResolver(new ContainerBuilder(), new ResultingClassResolver());
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
         $definition = new Definition();
         $factoryClass = 'NonExistingClass';

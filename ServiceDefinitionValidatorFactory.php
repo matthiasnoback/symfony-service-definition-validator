@@ -8,7 +8,7 @@ class ServiceDefinitionValidatorFactory implements ServiceDefinitionValidatorFac
 {
     public function create(ContainerBuilder $containerBuilder)
     {
-        $resultingClassResolver = new ResultingClassResolver();
+        $resultingClassResolver = new ResultingClassResolver($containerBuilder);
 
         $constructorResolver = new ConstructorResolver($containerBuilder, $resultingClassResolver);
 

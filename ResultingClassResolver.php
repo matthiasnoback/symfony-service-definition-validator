@@ -7,8 +7,22 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class ResultingClassResolver implements ResultingClassResolverInterface
 {
+    private $containerBuilder;
+
+    public function __construct(ContainerBuilder $containerBuilder)
+    {
+        $this->containerBuilder = $containerBuilder;
+    }
+
     public function resolve(Definition $definition)
     {
-        return $definition->getClass();
+        $class = $definition->getClass();
+
+        return $this->resolvePlaceholders($class);
+    }
+
+    private function resolvePlaceholders($value)
+    {
+        return $this->containerBuilder->getParameterBag()->resolveValue($value);
     }
 }
