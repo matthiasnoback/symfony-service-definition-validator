@@ -7,32 +7,48 @@
     </parameters>
     <services>
 
-        <service id="factory"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory">
-        </service>
+        <!--<service id="factory"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory">-->
+        <!--</service>-->
 
-        <service id="factory_with_variable_class"
-                 class="%factory.class%">
-         </service>
+        <!--<service id="factory_with_variable_class"-->
+                 <!--class="%factory.class%">-->
+         <!--</service>-->
 
-        <service id="product_from_factory"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Product"
-                 factory-service="factory"
-                 factory-method="create">
-            <argument>string argument</argument>
-        </service>
+        <!--<service id="mailer_from_factory"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer"-->
+                 <!--factory-service="factory"-->
+                 <!--factory-method="create">-->
+            <!--<argument>string argument</argument>-->
+        <!--</service>-->
 
-        <service id="shared_product"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Product">
-            <argument type="service" id="shared_price" />
-        </service>
+        <!--<service id="mailer"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">-->
+            <!--<argument type="service" id="transport" />-->
+        <!--</service>-->
 
-        <service id="shared_price"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Price">
-            <!-- has optional argument -->
-            <call method="setCurrency">
-                <argument>dollar</argument>
-            </call>
+        <!--<service id="transport"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Transport">-->
+            <!--&lt;!&ndash; has optional argument &ndash;&gt;-->
+            <!--<call method="setUsername">-->
+                <!--<argument>matthias</argument>-->
+            <!--</call>-->
+        <!--</service>-->
+
+        <!--<service id="translator"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Translator">-->
+            <!--<argument type="service" id="catalogue" />-->
+        <!--</service>-->
+
+        <!--&lt;!&ndash; private service, will be inlined &ndash;&gt;-->
+        <!--<service id="catalogue"-->
+                 <!--class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Catalogue"-->
+                 <!--public="false">-->
+        <!--</service>-->
+
+        <service id="mail_manager"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\MailManager">
+            <!-- has an optional type-hinted argument for a Mailer -->
         </service>
 
     </services>

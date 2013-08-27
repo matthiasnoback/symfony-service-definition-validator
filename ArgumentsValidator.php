@@ -17,6 +17,7 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
     {
         foreach ($method->getParameters() as $parameterNumber => $parameter) {
             $argument = $this->resolveArgument($parameterNumber, $parameter, $arguments);
+
             $this->argumentValidator->validate($parameter, $argument);
         }
     }
@@ -31,7 +32,8 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
         }
 
         if (!$parameter->isOptional()) {
-            throw new MissingRequiredArgumentException($parameter->getDeclaringClass()->getName(), $parameter->getName());
+            throw new MissingRequiredArgumentException($parameter->getDeclaringClass()->getName(), $parameter->getName(
+            ));
         }
 
         return null;

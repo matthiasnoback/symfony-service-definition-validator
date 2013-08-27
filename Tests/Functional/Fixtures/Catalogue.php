@@ -2,10 +2,6 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures;
 
-class Product
+class Catalogue
 {
-    public function __construct(Price $price)
-    {
-
-    }
 }

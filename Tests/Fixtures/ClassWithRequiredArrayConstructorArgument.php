@@ -2,7 +2,7 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures;
 
-class ClassWithArrayConstructorArgument
+class ClassWithRequiredArrayConstructorArgument
 {
     public function __construct(array $options)
     {

@@ -23,5 +23,4 @@ class ServiceDefinitionValidatorFactory implements ServiceDefinitionValidatorFac
 
         return $validator;
     }
-
 }

@@ -15,8 +15,7 @@ class ConstructorResolver implements ConstructorResolverInterface
     public function __construct(
         ContainerBuilder $containerBuilder,
         ResultingClassResolverInterface $resultingClassResolver
-    )
-    {
+    ) {
         $this->containerBuilder = $containerBuilder;
         $this->resultingClassResolver = $resultingClassResolver;
     }

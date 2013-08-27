@@ -4,6 +4,7 @@ namespace Matthias\SymfonyServiceDefinitionValidator;
 
 use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class ArgumentValidator implements ArgumentValidatorInterface
@@ -14,19 +15,24 @@ class ArgumentValidator implements ArgumentValidatorInterface
     public function __construct(
         ContainerBuilder $containerBuilder,
         ResultingClassResolverInterface $resultingClassResolver
-    )
-    {
+    ) {
         $this->containerBuilder = $containerBuilder;
         $this->resultingClassResolver = $resultingClassResolver;
     }
 
     public function validate(\ReflectionParameter $parameter, $argument)
     {
+        if ($argument === null && $parameter->allowsNull()) {
+            return;
+        }
+
         if ($parameter->isArray()) {
             $this->validateArrayArgument($argument);
         } elseif ($parameter->getClass()) {
             $this->validateObjectArgument($parameter->getClass()->getName(), $argument);
         }
+
+        // other argument don't need to be or can't be validated
     }
 
     private function validateArrayArgument($argument)
@@ -41,18 +47,30 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     private function validateObjectArgument($className, $argument)
     {
-        if (!($argument instanceof Reference)) {
+        if ($argument instanceof Reference) {
+            $this->validateReferenceArgument($className, $argument);
+        } elseif ($argument instanceof Definition) {
+            $this->validateDefinitionArgument($className, $argument);
+        } else {
             throw new TypeHintMismatchException(sprintf(
-                'Type-hint "%s" requires this argument to be an instance of Symfony\Component\DependencyInjection\Reference',
+                'Type-hint "%s" requires this argument to be a reference to a service or an inline service definition',
                 $className
             ));
         }
+    }
 
+    private function validateReferenceArgument($className, Reference $reference)
+    {
         // the __toString method of a Reference is the referenced service id
-        $referencedServiceId = (string)$argument;
+        $referencedServiceId = (string)$reference;
         $definition = $this->containerBuilder->findDefinition($referencedServiceId);
         // we don't have to check if the definition exists, since the ContainerBuilder itself does that already
 
+        $this->validateDefinitionArgument($className, $definition);
+    }
+
+    private function validateDefinitionArgument($className, Definition $definition)
+    {
         $resultingClass = $this->resultingClassResolver->resolve($definition);
         if ($resultingClass === null) {
             return;
@@ -65,7 +83,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
         $reflectionClass = new \ReflectionClass($resultingClass);
         if (!$reflectionClass->isSubclassOf($className)) {
             throw new TypeHintMismatchException(sprintf(
-                'Argument with type-hint "%s" is a reference to a service of class "%s"',
+                'Argument for type-hint "%s" should point to a service of class "%s"',
                 $className,
                 $resultingClass
             ));

@@ -2,9 +2,9 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures;
 
-class Factory
+class Translator
 {
-    public function create($argument1)
+    public function __construct(Catalogue $catalogue)
     {
     }
 }

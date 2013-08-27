@@ -14,8 +14,7 @@ class BatchServiceDefinitionValidator implements BatchServiceDefinitionValidator
     public function __construct(
         ServiceDefinitionValidatorInterface $serviceDefinitionValidator,
         ValidationErrorFactoryInterface $validationErrorFactory
-    )
-    {
+    ) {
         $this->serviceDefinitionValidator = $serviceDefinitionValidator;
         $this->validationErrorFactory = $validationErrorFactory;
     }

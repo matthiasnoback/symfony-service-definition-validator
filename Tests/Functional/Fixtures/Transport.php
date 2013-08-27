@@ -2,15 +2,13 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures;
 
-class Price
+class Transport
 {
-    public function __construct($currency = 'euro')
+    public function __construct($username = 'root')
     {
-
     }
 
-    public function setCurrency($currency)
+    public function setUsername($username)
     {
-
     }
 }

@@ -2,14 +2,7 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Functional;
 
-use Matthias\SymfonyServiceDefinitionValidator\ArgumentsValidator;
-use Matthias\SymfonyServiceDefinitionValidator\ArgumentValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
-use Matthias\SymfonyServiceDefinitionValidator\ConstructorResolver;
-use Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidator;
-use Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidator;
-use Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolver;
-use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

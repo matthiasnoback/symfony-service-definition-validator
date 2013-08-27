@@ -20,8 +20,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         ContainerBuilder $containerBuilder,
         DefinitionArgumentsValidatorInterface $definitionArgumentsValidator,
         MethodCallsValidatorInterface $methodCallsValidator
-    )
-    {
+    ) {
         $this->containerBuilder = $containerBuilder;
         $this->definitionArgumentsValidator = $definitionArgumentsValidator;
         $this->methodCallsValidator = $methodCallsValidator;

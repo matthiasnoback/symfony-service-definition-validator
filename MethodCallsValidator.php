@@ -13,8 +13,7 @@ class MethodCallsValidator implements MethodCallsValidatorInterface
     public function __construct(
         ResultingClassResolverInterface $resultingClassResolver,
         ArgumentsValidatorInterface $argumentsValidator
-    )
-    {
+    ) {
         $this->resultingClassResolver = $resultingClassResolver;
         $this->argumentsValidator = $argumentsValidator;
     }
