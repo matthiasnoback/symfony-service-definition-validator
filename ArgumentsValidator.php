@@ -16,26 +16,36 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
     public function validate(\ReflectionMethod $method, array $arguments)
     {
         foreach ($method->getParameters() as $parameterNumber => $parameter) {
-            $argument = $this->resolveArgument($parameterNumber, $parameter, $arguments);
-
-            $this->argumentValidator->validate($parameter, $argument);
+            if (array_key_exists($parameterNumber, $arguments)) {
+                $this->argumentValidator->validate($parameter, $arguments[$parameterNumber]);
+            } else {
+                if ($this->shouldParameterHaveAnArgument($parameter)) {
+                    throw new MissingRequiredArgumentException(
+                        $parameter->getDeclaringClass()->getName(),
+                        $parameter->getName()
+                    );
+                }
+            }
         }
     }
 
-    /**
-     * Find the argument by the numeric index of the given parameter
-     */
-    private function resolveArgument($parameterIndex, \ReflectionParameter $parameter, array $arguments)
+    private function shouldParameterHaveAnArgument(\ReflectionParameter $parameter)
     {
-        if (array_key_exists($parameterIndex, $arguments)) {
-            return $arguments[$parameterIndex];
+        if ($parameter->isOptional()) {
+            // as far as I know not available for user-land arguments
+            return false;
         }
 
-        if (!$parameter->isOptional()) {
-            throw new MissingRequiredArgumentException($parameter->getDeclaringClass()->getName(), $parameter->getName(
-            ));
+        if ($parameter->isDefaultValueAvailable()) {
+            // e.g. $username = 'root'
+            return false;
         }
 
-        return null;
+        if ($parameter->getClass() && $parameter->allowsNull()) {
+            // e.g. LoggerInterface $logger = null
+            return false;
+        }
+
+        return true;
     }
 }

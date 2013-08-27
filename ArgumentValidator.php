@@ -22,10 +22,6 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     public function validate(\ReflectionParameter $parameter, $argument)
     {
-        if ($argument === null && $parameter->allowsNull()) {
-            return;
-        }
-
         if ($parameter->isArray()) {
             $this->validateArrayArgument($argument);
         } elseif ($parameter->getClass()) {
