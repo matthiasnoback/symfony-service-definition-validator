@@ -32,7 +32,7 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
     private function shouldParameterHaveAnArgument(\ReflectionParameter $parameter)
     {
         if ($parameter->isOptional()) {
-            // as far as I know not available for user-land arguments
+            // any last argument with a default value is optional
             return false;
         }
 
