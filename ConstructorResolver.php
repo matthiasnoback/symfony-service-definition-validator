@@ -4,6 +4,8 @@ namespace Matthias\SymfonyServiceDefinitionValidator;
 
 use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\NonStaticFactoryMethodException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -49,7 +51,13 @@ class ConstructorResolver implements ConstructorResolverInterface
             throw new MethodNotFoundException($factoryClass, $factoryMethod);
         }
 
-        return new \ReflectionMethod($factoryClass, $factoryMethod);
+        $reflectionMethod = new \ReflectionMethod($factoryClass, $factoryMethod);
+
+        if (!$reflectionMethod->isStatic()) {
+            throw new NonStaticFactoryMethodException($factoryClass, $factoryMethod);
+        }
+
+        return $reflectionMethod;
     }
 
     private function resolveFactoryServiceWithMethod($factoryServiceId, $factoryMethod)
@@ -73,9 +81,11 @@ class ConstructorResolver implements ConstructorResolverInterface
 
         if ($reflectionClass->hasMethod('__construct')) {
             $constructMethod = $reflectionClass->getMethod('__construct');
-            if ($constructMethod->isPublic()) {
-                return $constructMethod;
+            if (!$constructMethod->isPublic()) {
+                throw new NonPublicConstructorException($class);
             }
+
+            return $constructMethod;
         }
 
         return null;

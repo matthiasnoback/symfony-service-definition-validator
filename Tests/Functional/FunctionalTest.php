@@ -6,6 +6,7 @@ use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitio
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class FunctionalTest extends \PHPUnit_Framework_TestCase
@@ -30,6 +31,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader->load('correct_service_definitions.xml');
 
         $this->container->compile();
+
+        $dumper = new PhpDumper($this->container);
+
+        var_dump($dumper->dump());
     }
 
     public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()

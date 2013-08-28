@@ -51,10 +51,23 @@
             <!-- has an optional type-hinted argument for a Mailer -->
         </service>
 
+        <service id="mail_manager2"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\MailManager">
+            <!-- has an optional type-hinted argument for a Mailer -->
+            <argument>null</argument>
+        </service>
+
         <service id="registry"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Registry">
             <!-- has an optional array argument -->
         </service>
+
+        <service id="transport2"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Transport">
+            <call method="setPassword"><!-- method does not exist, but will be handled by __call -->
+                <argument>root</argument>
+            </call>
+         </service>
 
     </services>
 </container>

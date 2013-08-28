@@ -31,7 +31,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
-        // stdClass has a constructor
+        // DateTime has a constructor
         $definition = new Definition('\DateTime');
 
         $expectedConstructor = new \ReflectionMethod('\DateTime', '__construct');
@@ -41,14 +41,15 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function ifConstructorIsNotPublicResolvedConstructorIsNull()
+    public function ifConstructorIsNotPublicItFails()
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
-        // stdClass has a constructor
+        // ClassWithNonPublicConstructor has a non-public constructor
         $definition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithNonPublicConstructor');
 
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException');
         $this->assertSame(null, $resolver->resolve($definition));
     }
 
@@ -85,6 +86,24 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $definition->setFactoryMethod($factoryMethod);
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $resolver->resolve($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function ifFactoryMethodIsNotStaticItFails()
+    {
+        $containerBuilder = new ContainerBuilder();
+        $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
+
+        $definition = new Definition();
+        $factoryClass = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass';
+        $definition->setFactoryClass($factoryClass);
+        $factoryMethod = 'createNonStatic';
+        $definition->setFactoryMethod($factoryMethod);
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonStaticFactoryMethodException');
         $resolver->resolve($definition);
     }
 }

@@ -4,12 +4,6 @@
 
 ## Fix false-negatives
 
-- Actual ``null`` argument (instead of just a missing argument) should be allowed for type-hinted arguments
-
-- Entity managers have strange definitions:
+- Entity managers seem to have strange definitions:
 
     <service id="doctrine.orm.default_entity_manager" class="Doctrine\ORM\EntityManager" factory-method="create">
-
-  The "class" attribute will be treated the same as the "factory-class" attribute when there is a "factory-method" attribute.
-
-- Validation of method calls should be skipped for classes that have a ``__call`` method.

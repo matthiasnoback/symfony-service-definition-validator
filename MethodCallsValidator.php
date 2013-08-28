@@ -37,6 +37,11 @@ class MethodCallsValidator implements MethodCallsValidatorInterface
     private function validateMethodCall($class, $method, array $arguments)
     {
         if (!method_exists($class, $method)) {
+            if (method_exists($class, '__call')) {
+                // method call may be handled by __call which can't be validated
+                return;
+            }
+
             throw new MethodNotFoundException($class, $method);
         }
 

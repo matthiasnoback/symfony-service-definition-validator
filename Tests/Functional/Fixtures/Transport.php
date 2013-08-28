@@ -11,4 +11,9 @@ class Transport
     public function setUsername($username)
     {
     }
+
+    public function __call($method, array $arguments)
+    {
+
+    }
 }

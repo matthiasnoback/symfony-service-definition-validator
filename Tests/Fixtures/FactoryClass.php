@@ -8,7 +8,11 @@ class FactoryClass
     {
     }
 
-    public function create()
+    public static function create()
+    {
+    }
+
+    public function createNonStatic()
     {
     }
 }

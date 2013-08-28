@@ -25,10 +25,10 @@ class ArgumentValidator implements ArgumentValidatorInterface
         if ($parameter->isArray()) {
             $this->validateArrayArgument($argument);
         } elseif ($parameter->getClass()) {
-            $this->validateObjectArgument($parameter->getClass()->getName(), $argument);
+            $this->validateObjectArgument($parameter->getClass()->getName(), $argument, $parameter->allowsNull());
         }
 
-        // other argument don't need to be or can't be validated
+        // other arguments don't need to be or can't be validated
     }
 
     private function validateArrayArgument($argument)
@@ -41,12 +41,14 @@ class ArgumentValidator implements ArgumentValidatorInterface
         }
     }
 
-    private function validateObjectArgument($className, $argument)
+    private function validateObjectArgument($className, $argument, $allowsNull)
     {
         if ($argument instanceof Reference) {
             $this->validateReferenceArgument($className, $argument);
         } elseif ($argument instanceof Definition) {
             $this->validateDefinitionArgument($className, $argument);
+        } elseif ($argument === null && $allowsNull) {
+            return;
         } else {
             throw new TypeHintMismatchException(sprintf(
                 'Type-hint "%s" requires this argument to be a reference to a service or an inline service definition',
