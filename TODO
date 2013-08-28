@@ -1,9 +1,3 @@
 # TODO
 
 - Rewrite tests to verify positive results instead of just catching negative results.
-
-## Fix false-negatives
-
-- Entity managers seem to have strange definitions:
-
-    <service id="doctrine.orm.default_entity_manager" class="Doctrine\ORM\EntityManager" factory-method="create">

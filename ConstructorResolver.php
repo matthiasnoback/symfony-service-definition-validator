@@ -43,6 +43,8 @@ class ConstructorResolver implements ConstructorResolverInterface
 
     private function resolveFactoryClassWithMethod($factoryClass, $factoryMethod)
     {
+        $factoryClass = $this->resolvePlaceholders($factoryClass);
+
         if (!class_exists($factoryClass)) {
             throw new ClassNotFoundException($factoryClass);
         }

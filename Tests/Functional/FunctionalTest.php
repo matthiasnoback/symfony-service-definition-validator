@@ -31,10 +31,6 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader->load('correct_service_definitions.xml');
 
         $this->container->compile();
-
-        $dumper = new PhpDumper($this->container);
-
-        var_dump($dumper->dump());
     }
 
     public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()

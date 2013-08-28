@@ -22,6 +22,14 @@
             <argument>string argument</argument>
         </service>
 
+        <!-- factory class should be resolved -->
+        <service id="mailer_from_variable_factory"
+                 factory-class="%factory.class%"
+                 factory-method="create"
+                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
+            <argument>string argument</argument>
+         </service>
+
         <service id="mailer"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
             <argument type="service" id="transport"/>
