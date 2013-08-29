@@ -2,6 +2,8 @@
 
 By Matthias Noback
 
+[![Build Status](https://secure.travis-ci.org/matthiasnoback/symfony-service-definition-validator.png)](http://travis-ci.org/matthiasnoback/symfony-service-definition-validator)
+
 ## Installation
 
 Using Composer:
@@ -38,34 +40,38 @@ please attach a copy of the error message and the relevant lines in ``app/cache/
 
 You can use the stand-alone validator for single definitions:
 
-    <?php
+```php
+<?php
 
-    use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidatorFactory;
+use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidatorFactory;
 
-    // an instance of Symfony\Component\DependencyInjection\ContainerBuilder
-    $containerBuilder = ...;
+// an instance of Symfony\Component\DependencyInjection\ContainerBuilder
+$containerBuilder = ...;
 
-    $validatorFactory = new ServiceDefinitionValidatorFactory();
-    $validator = $validatorFactory->create($containerBuilder);
+$validatorFactory = new ServiceDefinitionValidatorFactory();
+$validator = $validatorFactory->create($containerBuilder);
 
-    // an instance of Symfony\Component\DependencyInjection\Definition
-    $definition = ...;
+// an instance of Symfony\Component\DependencyInjection\Definition
+$definition = ...;
 
-    // will throw an exception for any validation error
-    $validator->validate($definition);
+// will throw an exception for any validation error
+$validator->validate($definition);
+```
 
 To process multiple definitions at once, wrap the validator inside a batch validator:
 
-    <?php
-    use Matthias\SymfonyServiceDefinitionValidator\BatchServiceDefinitionValidator;
-    use Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorFactory;
+```php
+<?php
+use Matthias\SymfonyServiceDefinitionValidator\BatchServiceDefinitionValidator;
+use Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorFactory;
 
-    $batchValidator = new BatchServiceDefinitionValidator(
-        $validator,
-        new ValidationErrorFactory()
-    );
+$batchValidator = new BatchServiceDefinitionValidator(
+    $validator,
+    new ValidationErrorFactory()
+);
 
-    $errorList = $batchValidator->validate($serviceDefinitions);
+$errorList = $batchValidator->validate($serviceDefinitions);
+```
 
 The resulting error list will contain errors about problematic service definitions.
 
@@ -74,22 +80,24 @@ The resulting error list will contain errors about problematic service definitio
 To check for the validity of all your service definitions at compile time, add the `ValidateServiceDefinitionsPass`
 compiler pass to the `ContainerBuilder` instance:
 
-    <?php
+```php
+<?php
 
-    use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
-    use Symfony\Component\DependencyInjection\ContainerBuilder;
-    use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 
-    class SomeBundle extends Bundle
+class SomeBundle extends Bundle
+{
+    public function build(ContainerBuilder $container)
     {
-        public function build(ContainerBuilder $container)
-        {
-            $container->addCompilerPass(
-                new ValidateServiceDefinitionsPass(),
-                PassConfig::TYPE_AFTER_REMOVING
-            );
-        }
+        $container->addCompilerPass(
+            new ValidateServiceDefinitionsPass(),
+            PassConfig::TYPE_AFTER_REMOVING
+        );
     }
+}
+```
 
 This compiler pass will throw an exception. The message of this exception will contain a list
 of invalid service definitions.
