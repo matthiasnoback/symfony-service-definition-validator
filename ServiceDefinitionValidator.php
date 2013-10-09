@@ -61,7 +61,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         if ($class) {
             $class = $this->containerBuilder->getParameterBag()->resolveValue($class);
 
-            if (!class_exists($class)) {
+            if (!class_exists($class) && !interface_exists($class)) {
                 throw new ClassNotFoundException($class);
             }
         } elseif ($this->shouldDefinitionHaveAClass($definition)) {

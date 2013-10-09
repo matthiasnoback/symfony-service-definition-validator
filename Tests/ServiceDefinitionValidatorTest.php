@@ -2,6 +2,7 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
+use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException;
 use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -70,6 +71,22 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $validator->validate($definition);
         } catch (DefinitionHasNoClassException $e) {
             $this->fail('Abstract definitions should be allowed to have no class');
+        }
+    }
+
+    public function testDefinedClassCanBeInterface()
+    {
+        $validator = new ServiceDefinitionValidator(
+            new ContainerBuilder(),
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        try {
+            // The choice for Serializable is arbitrary, any PHP interface would do
+            $validator->validate(new Definition('Serializable'));
+        } catch (ClassNotFoundException $e) {
+            $this->fail('Definition should be allowed to have an interface as class');
         }
     }
 
