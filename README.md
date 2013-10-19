@@ -101,3 +101,54 @@ class SomeBundle extends Bundle
 
 This compiler pass will throw an exception. The message of this exception will contain a list
 of invalid service definitions.
+
+### Fixing invalid service definitions in third-party bundles
+
+When the validator finds a problem with one of the service definitions that is your own, you can of course fix the
+problem yourself, but when the invalid service definition is defined in some other bundle, you can still fix problems by
+dynamically modifying the service definition. First you need to create a compiler pass:
+
+```php
+<?php
+
+namespace YourBundle\DependencyInjection\Compiler;
+
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+class FixInvalidServiceDefinitionPass implements CompilerPassInterface
+{
+    public function process(ContainerBuilder $container)
+    {
+        // find the bad definition:
+
+        $invalidDefinition = $container->findDefinition('the_service_id');
+
+        // for example, fix the class
+        $invalidDefinition->setClass('TheRightClass');
+    }
+}
+```
+
+After you have selected the invalid service definition, you can modify it in any way you like. For a list of everything
+you can do with ``Definition`` objects, see
+http://symfony.com/doc/master/components/dependency_injection/definitions.html.
+
+Don't forget to register the compiler pass in your bundle class:
+
+```php
+<?php
+
+namespace MyBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+class MyBundle extends Bundle
+{
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new FixInvalidServiceDefinitionPass());
+    }
+}
+```
