@@ -7,7 +7,7 @@
     </parameters>
     <services>
 
-        <!--<service id="factory"
+        <service id="factory"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory">
         </service>
 
@@ -22,7 +22,7 @@
             <argument>string argument</argument>
         </service>
 
-        &lt;!&ndash; factory class should be resolved &ndash;&gt;
+        <!-- factory class should be resolved -->
         <service id="mailer_from_variable_factory"
                  factory-class="%factory.class%"
                  factory-method="create"
@@ -37,7 +37,7 @@
 
         <service id="transport"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Transport">
-            &lt;!&ndash; has optional argument &ndash;&gt;
+            <!-- has optional argument -->
             <call method="setUsername">
                 <argument>matthias</argument>
             </call>
@@ -48,7 +48,7 @@
             <argument type="service" id="catalogue"/>
         </service>
 
-        &lt;!&ndash; private service, will be inlined &ndash;&gt;
+        <!-- private service, will be inlined -->
         <service id="catalogue"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Catalogue"
                  public="false">
@@ -56,26 +56,26 @@
 
         <service id="mail_manager"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\MailManager">
-            &lt;!&ndash; has an optional type-hinted argument for a Mailer &ndash;&gt;
+            <!-- has an optional type-hinted argument for a Mailer -->
         </service>
 
         <service id="mail_manager2"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\MailManager">
-            &lt;!&ndash; has an optional type-hinted argument for a Mailer &ndash;&gt;
+            <!-- has an optional type-hinted argument for a Mailer -->
             <argument>null</argument>
         </service>
 
         <service id="registry"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Registry">
-            &lt;!&ndash; has an optional array argument &ndash;&gt;
+            <!-- has an optional array argument -->
         </service>
 
         <service id="transport2"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Transport">
-            <call method="setPassword">&lt;!&ndash; method does not exist, but will be handled by __call &ndash;&gt;
+            <call method="setPassword"><!-- method does not exist, but will be handled by __call -->
                 <argument>root</argument>
             </call>
-         </service>-->
+         </service>
 
         <service id="service_with_expression_argument"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
