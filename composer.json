@@ -17,7 +17,8 @@
     },
     "require-dev": {
         "symfony/config": "2.*",
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "3.7.*",
+        "symfony/expression-language": "2.4.*"
     },
     "target-dir": "Matthias/SymfonyServiceDefinitionValidator",
     "autoload": {

@@ -6,6 +6,7 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchExcepti
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\Expression;
 
 class ArgumentValidator implements ArgumentValidatorInterface
 {
@@ -48,6 +49,10 @@ class ArgumentValidator implements ArgumentValidatorInterface
         } elseif ($argument instanceof Definition) {
             $this->validateDefinitionArgument($className, $argument);
         } elseif ($argument === null && $allowsNull) {
+            return;
+        } elseif (class_exists('Symfony\Component\ExpressionLanguage\Expression') && $argument instanceof Expression) {
+            // We currently have no way to validate an expression
+            // See also https://github.com/matthiasnoback/symfony-service-definition-validator/issues/6
             return;
         } else {
             throw new TypeHintMismatchException(sprintf(
