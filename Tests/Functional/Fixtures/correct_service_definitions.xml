@@ -77,10 +77,5 @@
             </call>
          </service>
 
-        <service id="service_with_expression_argument"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
-            <argument type="expression">service('transport')</argument>
-        </service>
-
     </services>
 </container>
