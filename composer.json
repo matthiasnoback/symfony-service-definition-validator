@@ -23,5 +23,10 @@
     "target-dir": "Matthias/SymfonyServiceDefinitionValidator",
     "autoload": {
         "psr-0" : { "Matthias\\SymfonyServiceDefinitionValidator\\" : "" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1.x-dev"
+        }
     }
 }
