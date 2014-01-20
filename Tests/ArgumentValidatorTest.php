@@ -3,9 +3,11 @@
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\ArgumentValidator;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\Expression;
 
 class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -78,6 +80,81 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'array');
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testFailsWhenResultOfExpressionIsNotAnObjectOfTheExpectedClass()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Expression('service("service_wrong_class")');
+
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->setDefinition('service_wrong_class', new Definition('stdClass'));
+
+        $validator = new ArgumentValidator($containerBuilder, $this->createMockResultingClassResolver());
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testFailsWhenResultOfExpressionIsNotAnObject()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Expression('"a string"');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testFailsWhenResultOfExpressionIsNullButNullIsNotAllowed()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedOptionalConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Expression('null');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        try {
+            $validator->validate($parameter, $argument);
+        } catch (TypeHintMismatchException $exception) {
+            $this->fail('null argument should be allowed');
+        }
+    }
+
+    public function testFailsIfSyntaxOfExpressionIsInvalid()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Expression('*invalid expression');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionSyntaxException');
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testFailsIfExpressionCouldNotBeEvaluated()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Expression('service("invalid service")');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException');
 
         $validator->validate($parameter, $argument);
     }

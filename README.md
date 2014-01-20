@@ -26,6 +26,9 @@ problems can be recognized:
 - Missing required arguments for method calls
 - Type-hint mismatches for constructor arguments (array or class/interface)
 - Type-hint mismatches for method call arguments (array or class/interface)
+- Syntax errors in arguments that are
+  [expressions](http://symfony.com/doc/current/book/service_container.html#using-the-expression-language)
+- Expressions that cause errors when being evaluated
 
 This will prevent lots of run-time problems, and will warn you about inconsistencies in your
 service definitions early on.

@@ -2,11 +2,15 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator;
 
+use Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionSyntaxException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\ExpressionLanguage;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class ArgumentValidator implements ArgumentValidatorInterface
 {
@@ -48,11 +52,9 @@ class ArgumentValidator implements ArgumentValidatorInterface
             $this->validateReferenceArgument($className, $argument);
         } elseif ($argument instanceof Definition) {
             $this->validateDefinitionArgument($className, $argument);
-        } elseif ($argument === null && $allowsNull) {
-            return;
         } elseif (class_exists('Symfony\Component\ExpressionLanguage\Expression') && $argument instanceof Expression) {
-            // We currently have no way to validate an expression
-            // See also https://github.com/matthiasnoback/symfony-service-definition-validator/issues/6
+            $this->validateExpressionArgument($className, $argument, $allowsNull);
+        } elseif ($argument === null && $allowsNull) {
             return;
         } else {
             throw new TypeHintMismatchException(sprintf(
@@ -79,16 +81,56 @@ class ArgumentValidator implements ArgumentValidatorInterface
             return;
         }
 
-        if ($className === $resultingClass) {
+        $this->validateClass($className, $resultingClass);
+    }
+
+    private function validateExpressionArgument($className, Expression $expression, $allowsNull)
+    {
+        $expressionLanguage = new ExpressionLanguage();
+
+        try {
+            $result = $expressionLanguage->evaluate($expression, array('container' => $this->containerBuilder));
+        } catch (SyntaxError $exception) {
+            throw new InvalidExpressionSyntaxException($expression, $exception);
+        } catch (\Exception $exception) {
+            throw new InvalidExpressionException($expression, $exception);
+        }
+
+        if ($result === null) {
+            if ($allowsNull) {
+                return;
+            }
+
+            throw new TypeHintMismatchException(sprintf(
+                'Argument for type-hint "%s" is an expression that evaluates to null, which is not allowed',
+                $className
+            ));
+        }
+
+        if (!is_object($result)) {
+            throw new TypeHintMismatchException(sprintf(
+                'Argument for type-hint "%s" is an expression that evaluates to a non-object',
+                $className
+            ));
+        }
+
+        $resultingClass = get_class($result);
+
+        $this->validateClass($className, $resultingClass);
+    }
+
+    private function validateClass($expectedClassName, $actualClassName)
+    {
+        if ($expectedClassName === $actualClassName) {
             return;
         }
 
-        $reflectionClass = new \ReflectionClass($resultingClass);
-        if (!$reflectionClass->isSubclassOf($className)) {
+        $reflectionClass = new \ReflectionClass($actualClassName);
+        if (!$reflectionClass->isSubclassOf($expectedClassName)) {
             throw new TypeHintMismatchException(sprintf(
-                'Argument for type-hint "%s" should point to a service of class "%s"',
-                $className,
-                $resultingClass
+                'Argument for type-hint "%s" points to a service of class "%s"',
+                $expectedClassName,
+                $actualClassName
             ));
         }
     }
