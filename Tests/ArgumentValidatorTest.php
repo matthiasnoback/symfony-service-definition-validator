@@ -86,6 +86,8 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsWhenResultOfExpressionIsNotAnObjectOfTheExpectedClass()
     {
+        $this->skipTestIfExpressionsAreNotAvailable();
+
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
@@ -103,6 +105,8 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsWhenResultOfExpressionIsNotAnObject()
     {
+        $this->skipTestIfExpressionsAreNotAvailable();
+
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
@@ -117,6 +121,8 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsWhenResultOfExpressionIsNullButNullIsNotAllowed()
     {
+        $this->skipTestIfExpressionsAreNotAvailable();
+
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedOptionalConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
@@ -133,6 +139,8 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsIfSyntaxOfExpressionIsInvalid()
     {
+        $this->skipTestIfExpressionsAreNotAvailable();
+
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
@@ -147,6 +155,8 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailsIfExpressionCouldNotBeEvaluated()
     {
+        $this->skipTestIfExpressionsAreNotAvailable();
+
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
@@ -162,5 +172,14 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
     private function createMockResultingClassResolver()
     {
         return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolverInterface');
+    }
+
+    private function skipTestIfExpressionsAreNotAvailable()
+    {
+        if (!class_exists('Symfony\Component\DependencyInjection\ExpressionLanguage')) {
+            $this->markTestSkipped(
+                'Expressions are not supported by this version of the DependencyInjection component'
+            );
+        }
     }
 }
