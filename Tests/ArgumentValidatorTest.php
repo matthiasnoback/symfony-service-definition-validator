@@ -94,7 +94,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->setDefinition('service_wrong_class', new Definition('stdClass'));
 
-        $validator = new ArgumentValidator($containerBuilder, $this->createMockResultingClassResolver());
+        $validator = new ArgumentValidator($containerBuilder, $this->createMockResultingClassResolver(), true);
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
@@ -108,7 +108,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
         $argument = new Expression('"a string"');
 
-        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver(), true);
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
@@ -152,7 +152,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
         $argument = new Expression('service("invalid service")');
 
-        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver(), true);
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException');
 

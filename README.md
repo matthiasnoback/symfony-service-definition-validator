@@ -67,6 +67,7 @@ To process multiple definitions at once, wrap the validator inside a batch valid
 
 ```php
 <?php
+
 use Matthias\SymfonyServiceDefinitionValidator\BatchServiceDefinitionValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorFactory;
 
@@ -106,6 +107,28 @@ class SomeBundle extends Bundle
 
 This compiler pass will throw an exception. The message of this exception will contain a list
 of invalid service definitions.
+
+### Configure the validator
+
+Both ``ValidateServiceDefinitionsPass`` and ``ServiceDefinitionValidatorFactory`` accept a ``Configuration`` object.
+It allows you to configure whether or not expression arguments should be evaluated. Since evaluating expressions can
+cause all kinds of runtime errors, it is *off by default*, but you can easily turn it on:
+
+```php
+<?php
+
+use Matthias\SymfonyServiceDefinitionValidator\Configuration;
+use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
+
+$configuration = new Configuration();
+$configuration->setEvaluateExpressions(true);
+
+$compilerPass = new ValidateServiceDefinitionsPass($configuration);
+
+// or
+
+$validatorFactory = new ServiceDefinitionValidatorFactory($configuration);
+```
 
 ### Fixing invalid service definitions in third-party bundles
 

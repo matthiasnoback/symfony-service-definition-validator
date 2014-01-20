@@ -3,6 +3,7 @@
 namespace Matthias\SymfonyServiceDefinitionValidator\Functional;
 
 use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
+use Matthias\SymfonyServiceDefinitionValidator\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,7 +20,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $this->container = new ContainerBuilder();
 
-        $compilerPass = new ValidateServiceDefinitionsPass();
+        $configuration = new Configuration();
+        $configuration->setEvaluateExpressions(true);
+
+        $compilerPass = new ValidateServiceDefinitionsPass($configuration);
 
         $this->container->addCompilerPass($compilerPass, PassConfig::TYPE_AFTER_REMOVING);
     }

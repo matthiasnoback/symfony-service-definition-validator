@@ -16,13 +16,16 @@ class ArgumentValidator implements ArgumentValidatorInterface
 {
     private $containerBuilder;
     private $resultingClassResolver;
+    private $evaluateExpressions;
 
     public function __construct(
         ContainerBuilder $containerBuilder,
-        ResultingClassResolverInterface $resultingClassResolver
+        ResultingClassResolverInterface $resultingClassResolver,
+        $evaluateExpressions = false
     ) {
         $this->containerBuilder = $containerBuilder;
         $this->resultingClassResolver = $resultingClassResolver;
+        $this->evaluateExpressions = $evaluateExpressions;
     }
 
     public function validate(\ReflectionParameter $parameter, $argument)
@@ -88,10 +91,26 @@ class ArgumentValidator implements ArgumentValidatorInterface
     {
         $expressionLanguage = new ExpressionLanguage();
 
+        $this->validateExpressionSyntax($expression, $expressionLanguage);
+
+        if ($this->evaluateExpressions) {
+            $this->validateExpressionResult($className, $expression, $allowsNull, $expressionLanguage);
+        }
+    }
+
+    private function validateExpressionSyntax(Expression $expression, ExpressionLanguage $expressionLanguage)
+    {
         try {
-            $result = $expressionLanguage->evaluate($expression, array('container' => $this->containerBuilder));
+            $expressionLanguage->parse($expression, array('container'));
         } catch (SyntaxError $exception) {
             throw new InvalidExpressionSyntaxException($expression, $exception);
+        }
+    }
+
+    private function validateExpressionResult($className, Expression $expression, $allowsNull, ExpressionLanguage $expressionLanguage)
+    {
+        try {
+            $result = $expressionLanguage->evaluate($expression, array('container' => $this->containerBuilder));
         } catch (\Exception $exception) {
             throw new InvalidExpressionException($expression, $exception);
         }
