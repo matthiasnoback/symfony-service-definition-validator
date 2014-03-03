@@ -34,6 +34,6 @@ class DefinitionArgumentsValidator implements DefinitionArgumentsValidatorInterf
 
         $arguments = $definition->getArguments();
 
-        $this->argumentsValidator->validate($constructor, $arguments);
+        $this->argumentsValidator->validate($constructor, array_values($arguments));
     }
 }

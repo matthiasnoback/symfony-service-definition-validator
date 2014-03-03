@@ -8,6 +8,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class FunctionalTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,6 +33,9 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
         $loader->load('correct_service_definitions.xml');
+
+        $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
+        $loader->load('reported_problems.yml');
 
         $this->container->compile();
     }
