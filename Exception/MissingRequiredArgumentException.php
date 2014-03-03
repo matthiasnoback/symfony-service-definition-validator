@@ -7,7 +7,7 @@ class MissingRequiredArgumentException extends \RuntimeException implements Defi
     public function __construct($className, $parameterName)
     {
         parent::__construct(sprintf(
-            'Definition has no argument for required parameter %s',
+            'Definition for class %s has no argument for required parameter %s',
             $className,
             $parameterName
         ));

@@ -73,8 +73,7 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function ifConstructorIsFoundValidatesUsingArgumentsValidator()
     {
-        $class = 'stdClass';
-        $definition = new Definition($class);
+        $definition = new Definition();
         $arguments = array(0 => 'argument1', 1 => 'argument2');
         $definition->setArguments($arguments);
 
@@ -84,6 +83,36 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('validate')
             ->with($this->equalTo($constructorMethod), $arguments);
+
+        $constructorResolver = $this->createMockConstructorResolver();
+        $constructorResolver
+            ->expects($this->once())
+            ->method('resolve')
+            ->with($definition)
+            ->will($this->returnValue($constructorMethod));
+
+        $validator = new DefinitionArgumentsValidator($constructorResolver, $argumentsValidator);
+
+        $validator->validate($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function itConvertsAnAssociativeArrayOfArgumentsToANumericallyIndexedOrderedArray()
+    {
+        $definition = new Definition();
+        $arguments = array('named_argument1' => 'argument1', 'named_argument2' => 'argument2');
+        $definition->setArguments($arguments);
+
+        $numericallyIndexedArguments = array('argument1', 'argument2');
+
+        $constructorMethod = new \ReflectionMethod('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithConstructor', '__construct');
+        $argumentsValidator = $this->createMockArgumentsValidator();
+        $argumentsValidator
+            ->expects($this->once())
+            ->method('validate')
+            ->with($this->equalTo($constructorMethod), $this->identicalTo($numericallyIndexedArguments));
 
         $constructorResolver = $this->createMockConstructorResolver();
         $constructorResolver
