@@ -11,7 +11,7 @@ By Matthias Noback
 
 Using Composer:
 
-    php composer.phar require matthiasnoback/symfony-service-definition-validator ~1.0
+    php composer.phar require --dev matthiasnoback/symfony-service-definition-validator ~1
 
 ## Problems the validator can spot
 
@@ -98,10 +98,12 @@ class SomeBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(
-            new ValidateServiceDefinitionsPass(),
-            PassConfig::TYPE_AFTER_REMOVING
-        );
+        if ($container->getParameter('kernel.debug')) {
+            $container->addCompilerPass(
+                new ValidateServiceDefinitionsPass(),
+                PassConfig::TYPE_AFTER_REMOVING
+            );
+        }
     }
 }
 ```
@@ -177,7 +179,10 @@ class MyBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new FixInvalidServiceDefinitionPass());
+        if ($container->getParameter('kernel.debug')) {
+            $container->addCompilerPass(new FixInvalidServiceDefinitionPass());
+        }
     }
 }
 ```
+
