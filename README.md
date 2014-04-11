@@ -11,7 +11,7 @@ By Matthias Noback
 
 Using Composer:
 
-    php composer.phar require --dev matthiasnoback/symfony-service-definition-validator ~1
+    php composer.phar require matthiasnoback/symfony-service-definition-validator ~1
 
 ## Problems the validator can spot
 
