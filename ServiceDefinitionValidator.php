@@ -61,6 +61,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         if ($class) {
             $class = $this->containerBuilder->getParameterBag()->resolveValue($class);
 
+            // TODO only services created using a factory can have an interface
             if (!class_exists($class) && !interface_exists($class)) {
                 throw new ClassNotFoundException($class);
             }
@@ -113,7 +114,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
 
     private function validateFactoryClassAndMethod($factoryClass, $factoryMethod)
     {
-        if (!class_exists($factoryClass)) {
+        if (!class_exists($factoryClass) && !interface_exists($factoryClass)) {
             throw new ClassNotFoundException($factoryClass);
         }
 
