@@ -7,3 +7,13 @@ services:
             password: "password"
         calls:
             - [setAttribute, [3, 2]]
+
+    # Issue 12: https://github.com/matthiasnoback/symfony-service-definition-validator/issues/12
+    # A service created by a factory might itself be created by another factory, in which case it should be possible to
+    # supply an interface, not a class
+    validator_builder:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\ValidatorBuilderInterface
+    validator:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Validator
+        factory_service: validator_builder
+        factory_method: build
