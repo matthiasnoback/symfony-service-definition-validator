@@ -15,5 +15,9 @@ before_script:
   - composer require symfony/dependency-injection:${DEPENDENCY_INJECTION_VERSION}
   - composer require symfony/expression-language:${EXPRESSION_LANGUAGE_VERSION} --dev
 
+script:
+  - curl -sS http://bldr.io/installer | php
+  - php bldr.phar build travis
+
 notifications:
   email: matthiasnoback@gmail.com
