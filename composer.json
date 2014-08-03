@@ -20,9 +20,8 @@
         "phpunit/phpunit": "3.7.*",
         "symfony/expression-language": "2.4.*"
     },
-    "target-dir": "Matthias/SymfonyServiceDefinitionValidator",
     "autoload": {
-        "psr-0" : { "Matthias\\SymfonyServiceDefinitionValidator\\" : "" }
+        "psr-4" : { "Matthias\\SymfonyServiceDefinitionValidator\\" : "" }
     },
     "extra": {
         "branch-alias": {
