@@ -26,28 +26,14 @@ class ConstructorResolver implements ConstructorResolverInterface
 
     public function resolve(Definition $definition)
     {
-        $factory = method_exists($definition, 'getFactory') ? $definition->getFactory() : null;
+        $factory = $this->resolveFactory($definition);
 
         if (is_string($factory)) {
-            if (!function_exists($factory)) {
-                throw new FunctionNotFoundException($factory);
-            }
-
-            return $factory;
+            return $this->resolveFactoryFunction($factory);
         } elseif (is_array($factory) && $factory[0] instanceof Reference) {
             return $this->resolveFactoryServiceWithMethod($factory[0], $factory[1]);
         } elseif (is_array($factory)) {
             return $this->resolveFactoryClassWithMethod($factory[0], $factory[1]);
-        } elseif ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
-            return $this->resolveFactoryClassWithMethod(
-                $definition->getFactoryClass(),
-                $definition->getFactoryMethod()
-            );
-        } elseif ($definition->getFactoryService() && $definition->getFactoryMethod()) {
-            return $this->resolveFactoryServiceWithMethod(
-                $definition->getFactoryService(),
-                $definition->getFactoryMethod()
-            );
         } elseif ($definition->getClass()) {
             return $this->resolveClassWithConstructor($definition->getClass());
         }
@@ -110,5 +96,31 @@ class ConstructorResolver implements ConstructorResolverInterface
     private function resolvePlaceholders($value)
     {
         return $this->containerBuilder->getParameterBag()->resolveValue($value);
+    }
+
+    private function resolveFactory(Definition $definition)
+    {
+        if ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
+            return array($definition->getFactoryClass(), $definition->getFactoryMethod());
+        }
+
+        if ($definition->getFactoryService() && $definition->getFactoryMethod()) {
+            return array(new Reference($definition->getFactoryService()), $definition->getFactoryMethod());
+        }
+
+        if (method_exists($definition, 'getFactory')) {
+            return $definition->getFactory();
+        }
+
+        return null;
+    }
+
+    private function resolveFactoryFunction($factory)
+    {
+        if (!function_exists($factory)) {
+            throw new FunctionNotFoundException($factory);
+        }
+
+        return new \ReflectionFunction($factory);
     }
 }

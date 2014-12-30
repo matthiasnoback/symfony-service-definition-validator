@@ -203,7 +203,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition();
         $definition->setFactory('factoryCallback');
 
-        $this->assertSame('factoryCallback', $resolver->resolve($definition));
+        $this->assertEquals(new \ReflectionFunction('factoryCallback'), $resolver->resolve($definition));
     }
 
     /**
