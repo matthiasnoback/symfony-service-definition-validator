@@ -13,7 +13,7 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
         $this->argumentValidator = $argumentValidator;
     }
 
-    public function validate(\ReflectionMethod $method, array $arguments)
+    public function validate(\ReflectionFunctionAbstract $method, array $arguments)
     {
         foreach ($method->getParameters() as $parameterNumber => $parameter) {
             if (array_key_exists($parameterNumber, $arguments)) {

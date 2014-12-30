@@ -3,11 +3,13 @@
 namespace Matthias\SymfonyServiceDefinitionValidator;
 
 use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
+use Matthias\SymfonyServiceDefinitionValidator\Exception\FunctionNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\NonStaticFactoryMethodException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ConstructorResolver implements ConstructorResolverInterface
 {
@@ -24,16 +26,14 @@ class ConstructorResolver implements ConstructorResolverInterface
 
     public function resolve(Definition $definition)
     {
-        if ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
-            return $this->resolveFactoryClassWithMethod(
-                $definition->getFactoryClass(),
-                $definition->getFactoryMethod()
-            );
-        } elseif ($definition->getFactoryService() && $definition->getFactoryMethod()) {
-            return $this->resolveFactoryServiceWithMethod(
-                $definition->getFactoryService(),
-                $definition->getFactoryMethod()
-            );
+        $factory = $this->resolveFactory($definition);
+
+        if (is_string($factory)) {
+            return $this->resolveFactoryFunction($factory);
+        } elseif (is_array($factory) && $factory[0] instanceof Reference) {
+            return $this->resolveFactoryServiceWithMethod($factory[0], $factory[1]);
+        } elseif (is_array($factory)) {
+            return $this->resolveFactoryClassWithMethod($factory[0], $factory[1]);
         } elseif ($definition->getClass()) {
             return $this->resolveClassWithConstructor($definition->getClass());
         }
@@ -96,5 +96,31 @@ class ConstructorResolver implements ConstructorResolverInterface
     private function resolvePlaceholders($value)
     {
         return $this->containerBuilder->getParameterBag()->resolveValue($value);
+    }
+
+    private function resolveFactory(Definition $definition)
+    {
+        if ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
+            return array($definition->getFactoryClass(), $definition->getFactoryMethod());
+        }
+
+        if ($definition->getFactoryService() && $definition->getFactoryMethod()) {
+            return array(new Reference($definition->getFactoryService()), $definition->getFactoryMethod());
+        }
+
+        if (method_exists($definition, 'getFactory')) {
+            return $definition->getFactory();
+        }
+
+        return null;
+    }
+
+    private function resolveFactoryFunction($factory)
+    {
+        if (!function_exists($factory)) {
+            throw new FunctionNotFoundException($factory);
+        }
+
+        return new \ReflectionFunction($factory);
     }
 }

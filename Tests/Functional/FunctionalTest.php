@@ -54,6 +54,18 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $this->container->compile();
     }
 
+    public function testIfAServiceDefinitionWithAFactoryIsCorrectTheContainerWillBeCompiled()
+    {
+        if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
+            $this->markTestSkipped('Support for callables as factories was introduced in Symfony 2.6');
+        }
+
+        $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
+        $loader->load('service_definition_with_factory.xml');
+
+        $this->container->compile();
+    }
+
     public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()
     {
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));

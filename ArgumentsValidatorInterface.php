@@ -4,5 +4,5 @@ namespace Matthias\SymfonyServiceDefinitionValidator;
 
 interface ArgumentsValidatorInterface
 {
-    public function validate(\ReflectionMethod $method, array $arguments);
+    public function validate(\ReflectionFunctionAbstract $method, array $arguments);
 }
