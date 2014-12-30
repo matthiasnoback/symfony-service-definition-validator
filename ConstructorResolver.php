@@ -30,11 +30,17 @@ class ConstructorResolver implements ConstructorResolverInterface
 
         if (is_string($factory)) {
             return $this->resolveFactoryFunction($factory);
-        } elseif (is_array($factory) && $factory[0] instanceof Reference) {
-            return $this->resolveFactoryServiceWithMethod($factory[0], $factory[1]);
-        } elseif (is_array($factory)) {
+        }
+
+        if (is_array($factory) && $factory[0] instanceof Reference) {
+            return $this->resolveFactoryServiceWithMethod((string) $factory[0], $factory[1]);
+        }
+
+        if (is_array($factory)) {
             return $this->resolveFactoryClassWithMethod($factory[0], $factory[1]);
-        } elseif ($definition->getClass()) {
+        }
+
+        if ($definition->getClass()) {
             return $this->resolveClassWithConstructor($definition->getClass());
         }
 
@@ -100,16 +106,16 @@ class ConstructorResolver implements ConstructorResolverInterface
 
     private function resolveFactory(Definition $definition)
     {
+        if (method_exists($definition, 'getFactory') && $definition->getFactory() !== null) {
+            return $definition->getFactory();
+        }
+
         if ($definition->getFactoryClass() && $definition->getFactoryMethod()) {
             return array($definition->getFactoryClass(), $definition->getFactoryMethod());
         }
 
         if ($definition->getFactoryService() && $definition->getFactoryMethod()) {
             return array(new Reference($definition->getFactoryService()), $definition->getFactoryMethod());
-        }
-
-        if (method_exists($definition, 'getFactory')) {
-            return $definition->getFactory();
         }
 
         return null;
