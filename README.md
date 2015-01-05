@@ -5,7 +5,6 @@ By Matthias Noback
 [![Build Status](https://secure.travis-ci.org/matthiasnoback/symfony-service-definition-validator.png)](http://travis-ci.org/matthiasnoback/symfony-service-definition-validator)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/matthiasnoback/symfony-service-definition-validator/badges/quality-score.png?s=c04fb4a34fa5d4c27f1e4ef0d8794c07b3c40e91)](https://scrutinizer-ci.com/g/matthiasnoback/symfony-service-definition-validator/)
 [![Latest Stable Version](https://poser.pugx.org/matthiasnoback/symfony-service-definition-validator/v/stable.png)](https://packagist.org/packages/matthiasnoback/symfony-service-definition-validator)
-[![Latest Unstable Version](https://poser.pugx.org/matthiasnoback/symfony-service-definition-validator/v/unstable.png)](https://packagist.org/packages/matthiasnoback/symfony-service-definition-validator)
 
 ## Installation
 
