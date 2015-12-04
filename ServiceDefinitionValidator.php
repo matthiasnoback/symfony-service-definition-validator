@@ -9,6 +9,7 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodExc
 use Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
 {
@@ -39,9 +40,7 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
     {
         $this->validateClass($definition);
 
-        $this->validateFactoryClass($definition);
-
-        $this->validateFactoryService($definition);
+        $this->validateFactory($definition);
     }
 
     public function validateArguments(Definition $definition)
@@ -70,50 +69,46 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         }
     }
 
-    private function validateFactoryClass(Definition $definition)
+    private function validateFactory(Definition $definition)
     {
-        $factoryClass = $definition->getFactoryClass();
-
-        if (!$factoryClass) {
-            return;
+        if (method_exists($definition, 'getFactoryClass')) {
+            // Symfony <= 3.0.0
+            $factoryClass = $definition->getFactoryClass();
+            if ($factoryClass) {
+                $this->validateFactoryClassAndMethod($factoryClass, $definition->getFactoryMethod());
+            }
         }
 
-        $factoryMethod = $definition->getFactoryMethod();
+        if (method_exists($definition, 'getFactoryService')) {
+            $factoryService = $definition->getFactoryService();
+            if ($factoryService) {
+                $this->validateFactoryServiceAndMethod($factoryService, $definition->getFactoryMethod());
+            }
+        }
 
+        if (method_exists($definition, 'getFactory')) {
+            $factory = $definition->getFactory();
+            if (!is_array($factory) || count($factory) !== 2) {
+                return;
+            }
+
+            list($factoryClassOrService, $method) = $factory;
+            if (is_string($factoryClassOrService)) {
+                $this->validateFactoryClassAndMethod($factoryClassOrService, $method);
+            } else {
+                $this->validateFactoryServiceAndMethod((string) $factoryClassOrService, $method);
+            }
+        }
+    }
+
+    private function validateFactoryClassAndMethod($factoryClass, $factoryMethod)
+    {
         if ($factoryClass && !$factoryMethod) {
             throw new MissingFactoryMethodException();
         }
 
         $factoryClass = $this->resolveValue($factoryClass);
 
-        $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);
-    }
-
-    private function validateFactoryService(Definition $definition)
-    {
-        $factoryServiceId = $definition->getFactoryService();
-
-        if (!$factoryServiceId) {
-            return;
-        }
-
-        $factoryMethod = $definition->getFactoryMethod();
-        if (!$factoryMethod) {
-            throw new MissingFactoryMethodException();
-        }
-
-        if (!$this->containerBuilder->has($factoryServiceId)) {
-            throw new ServiceNotFoundException($factoryServiceId);
-        }
-
-        $factoryServiceDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
-        $factoryClass = $factoryServiceDefinition->getClass();
-
-        $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);
-    }
-
-    private function validateFactoryClassAndMethod($factoryClass, $factoryMethod)
-    {
         if (!class_exists($factoryClass) && !interface_exists($factoryClass)) {
             throw new ClassNotFoundException($factoryClass);
         }
@@ -152,5 +147,21 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
     private function resolveValue($value)
     {
         return $this->containerBuilder->getParameterBag()->resolveValue($value);
+    }
+
+    private function validateFactoryServiceAndMethod($factoryServiceId, $factoryMethod)
+    {
+        if (!$factoryMethod) {
+            throw new MissingFactoryMethodException();
+        }
+
+        if (!$this->containerBuilder->has($factoryServiceId)) {
+            throw new ServiceNotFoundException($factoryServiceId);
+        }
+
+        $factoryServiceDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
+        $factoryClass = $factoryServiceDefinition->getClass();
+
+        $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);
     }
 }

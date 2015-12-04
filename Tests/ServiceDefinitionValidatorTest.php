@@ -2,11 +2,14 @@
 
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
+use Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException;
+use Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface;
 use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -107,8 +110,14 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     public function testRecognizesNonExistingFactoryClass()
     {
         $definition = new Definition('stdClass');
-        $definition->setFactoryClass($this->getNonExistingClassName());
-        $definition->setFactoryMethod('create');
+
+        if (method_exists($definition, 'setFactoryClass')) {
+            $definition->setFactoryClass($this->getNonExistingClassName());
+            $definition->setFactoryMethod('create');
+        } else {
+            $definition->setFactory(array($this->getNonExistingClassName(), 'create'));
+        }
+
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
             $containerBuilder,
@@ -123,8 +132,16 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     public function testRecognizesNonExistingFactoryMethod()
     {
         $definition = new Definition('stdClass');
-        $definition->setFactoryClass('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
-        $definition->setFactoryMethod('nonExistingFactoryMethod');
+        if (method_exists($definition, 'setFactoryClass')) {
+            $definition->setFactoryClass('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
+            $definition->setFactoryMethod('nonExistingFactoryMethod');
+        } else {
+            $definition->setFactory(array(
+                'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass',
+                'nonExistingFactoryMethod'
+            ));
+        }
+
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
             $containerBuilder,
@@ -142,7 +159,11 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     public function ifFactoryServiceIsSpecifiedWithoutFactoryMethodFails()
     {
         $definition = new Definition('stdClass');
-        $definition->setFactoryService('factory_service');
+        if (method_exists($definition, 'setFactoryService')) {
+            $definition->setFactoryService('factory_service');
+        } else {
+            $definition->setFactory(array(new Reference('factory_service'), null));
+        }
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
@@ -161,8 +182,12 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     public function ifFactoryServiceDoesNotExistFails()
     {
         $definition = new Definition('stdClass');
-        $definition->setFactoryService('factory_service');
-        $definition->setFactoryMethod('factoryMethod');
+        if (method_exists($definition, 'setFactoryService')) {
+            $definition->setFactoryService('factory_service');
+            $definition->setFactoryMethod('factoryMethod');
+        } else {
+            $definition->setFactory(array(new Reference('factory_service'), 'factoryMethod'));
+        }
 
         $containerBuilder = new ContainerBuilder();
 
@@ -186,8 +211,12 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $containerBuilder->setDefinition('factory_service', $factoryDefinition);
 
         $definition = new Definition('stdClass');
-        $definition->setFactoryService('factory_service');
-        $definition->setFactoryMethod('nonExistingFactoryMethod');
+        if (method_exists($definition, 'setFactoryService')) {
+            $definition->setFactoryService('factory_service');
+            $definition->setFactoryMethod('nonExistingFactoryMethod');
+        } else {
+            $definition->setFactory(array(new Reference('factory_service'), 'nonExistingFactoryMethod'));
+        }
 
         $validator = new ServiceDefinitionValidator(
             $containerBuilder,
@@ -204,11 +233,17 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         return md5(rand(1, 999));
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|DefinitionArgumentsValidatorInterface
+     */
     private function createMockDefinitionArgumentsValidator()
     {
         return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface');
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|MethodCallsValidatorInterface
+     */
     private function createMockMethodCallsValidator()
     {
         return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface');

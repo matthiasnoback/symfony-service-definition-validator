@@ -1,0 +1,22 @@
+services:
+    # Issue 12: https://github.com/matthiasnoback/symfony-service-definition-validator/issues/12
+    # A service created by a factory might itself be created by another factory, in which case it should be possible to
+    # supply an interface, not a class
+    validator_builder:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\ValidatorBuilderInterface
+    validator:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Validator
+        factory_service: validator_builder
+        factory_method: build
+
+    # Issue 11: https://github.com/matthiasnoback/symfony-service-definition-validator/issues/11
+    # It is alright for the factory service to be private
+    service_created_by_private_factory:
+        class: stdClass
+        factory_service: private_factory
+        factory_method: create
+        arguments:
+            - required_argument
+    private_factory:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory
+        private: true

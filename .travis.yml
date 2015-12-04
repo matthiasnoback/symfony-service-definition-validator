@@ -9,27 +9,29 @@ matrix:
     - php: 5.5
     - php: 5.6
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.2.*
+      env: SYMFONY_VERSION=2.2.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.3.*
+      env: SYMFONY_VERSION=2.3.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.4.* EXPRESSION_LANGUAGE_VERSION=2.4.*
+      env: SYMFONY_VERSION=2.4.* EXPRESSION_LANGUAGE_VERSION=2.4.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.5.* EXPRESSION_LANGUAGE_VERSION=2.5.*
+      env: SYMFONY_VERSION=2.5.* EXPRESSION_LANGUAGE_VERSION=2.5.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.6.* EXPRESSION_LANGUAGE_VERSION=2.6.*
+      env: SYMFONY_VERSION=2.6.* EXPRESSION_LANGUAGE_VERSION=2.6.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=2.7.* EXPRESSION_LANGUAGE_VERSION=2.7.*
+      env: SYMFONY_VERSION=2.7.* EXPRESSION_LANGUAGE_VERSION=2.7.*
     - php: 5.6
-      env: DEPENDENCY_INJECTION_VERSION=3.0.* EXPRESSION_LANGUAGE_VERSION=3.0.*
+      env: SYMFONY_VERSION=3.0.* EXPRESSION_LANGUAGE_VERSION=3.0.*
 
 env:
   global:
-    - DEPENDENCY_INJECTION_VERSION=""
+    - SYMFONY_VERSION=""
     - EXPRESSION_LANGUAGE_VERSION=""
 
 before_install:
-  - if [ "$DEPENDENCY_INJECTION_VERSION" != "" ]; then composer require --dev --no-update symfony/dependency-injection "$DEPENDENCY_INJECTION_VERSION"; fi
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/dependency-injection "$SYMFONY_VERSION"; fi
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --dev --no-update symfony/config "$SYMFONY_VERSION"; fi
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --dev --no-update symfony/yaml "$SYMFONY_VERSION"; fi
   - if [ "$EXPRESSION_LANGUAGE_VERSION" != "" ]; then composer require --dev --no-update symfony/expression-language "$EXPRESSION_LANGUAGE_VERSION"; fi
 
 install:

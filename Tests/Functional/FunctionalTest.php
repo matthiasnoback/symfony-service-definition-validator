@@ -34,8 +34,17 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
         $loader->load('correct_service_definitions.xml');
 
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryClass')) {
+            $loader->load('correct_service_definitions_pre_symfony_3_0.xml');
+        } else {
+            $loader->load('correct_service_definitions_post_symfony_3_0.xml');
+        }
+
         $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
         $loader->load('reported_problems.yml');
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryClass')) {
+            $loader->load('reported_problems_pre_symfony_3_0.yml');
+        }
 
         $this->container->compile();
     }

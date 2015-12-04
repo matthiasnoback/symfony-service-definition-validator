@@ -74,15 +74,20 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $factoryMethod = 'create';
         $expectedConstructor = new \ReflectionMethod($factoryClass, $factoryMethod);
 
-        $definition = new Definition();
-        $definition->setFactoryService($factoryService);
-        $definition->setFactoryMethod($factoryMethod);
+        $data = array();
 
-        $data = array(array($factoryClass, $definition, $expectedConstructor));
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryService')) {
+            $definition = new Definition();
+            $definition->setFactoryService($factoryService);
+            $definition->setFactoryMethod($factoryMethod);
 
-        if (method_exists($definition, 'setFactory')) {
+            $data[] = array($factoryClass, $definition, $expectedConstructor);
+        }
+
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactory')) {
             $definition = new Definition();
             $definition->setFactory(array(new Reference($factoryService), $factoryMethod));
+
             $data[] = array($factoryClass, $definition, $expectedConstructor);
         }
 
@@ -107,15 +112,20 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $factoryMethod = 'create';
         $expectedConstructor = new \ReflectionMethod($factoryClass, $factoryMethod);
 
-        $definition = new Definition();
-        $definition->setFactoryClass($factoryClass);
-        $definition->setFactoryMethod($factoryMethod);
+        $data = array();
 
-        $data = array(array($definition, $expectedConstructor));
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryClass')) {
+            $definition = new Definition();
+            $definition->setFactoryClass($factoryClass);
+            $definition->setFactoryMethod($factoryMethod);
 
-        if (method_exists($definition, 'setFactory')) {
+            $data[] = array($definition, $expectedConstructor);
+        }
+
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactory')) {
             $definition = new Definition();
             $definition->setFactory(array($factoryClass, $factoryMethod));
+
             $data[] = array($definition, $expectedConstructor);
         }
 
@@ -140,15 +150,20 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $factoryClass = 'NonExistingClass';
         $factoryMethod = 'create';
 
-        $definition = new Definition();
-        $definition->setFactoryClass($factoryClass);
-        $definition->setFactoryMethod($factoryMethod);
+        $data = array();
 
-        $data = array(array($definition));
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryClass')) {
+            $definition = new Definition();
+            $definition->setFactoryClass($factoryClass);
+            $definition->setFactoryMethod($factoryMethod);
 
-        if (method_exists($definition, 'setFactory')) {
+            $data[] = array($definition);
+        }
+
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactory')) {
             $definition = new Definition();
             $definition->setFactory(array($factoryClass, $factoryMethod));
+
             $data[] = array($definition);
         }
 
@@ -173,15 +188,20 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $factoryClass = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass';
         $factoryMethod = 'createNonStatic';
 
-        $definition = new Definition();
-        $definition->setFactoryClass($factoryClass);
-        $definition->setFactoryMethod($factoryMethod);
+        $data = array();
 
-        $data = array(array($definition));
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactoryClass')) {
+            $definition = new Definition();
+            $definition->setFactoryClass($factoryClass);
+            $definition->setFactoryMethod($factoryMethod);
 
-        if (method_exists($definition, 'setFactory')) {
+            $data[] = array($definition);
+        }
+
+        if (method_exists('Symfony\Component\DependencyInjection\Definition', 'setFactory')) {
             $definition = new Definition();
             $definition->setFactory(array($factoryClass, $factoryMethod));
+
             $data[] = array($definition);
         }
 

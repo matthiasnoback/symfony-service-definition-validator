@@ -15,21 +15,6 @@
                  class="%factory.class%">
         </service>
 
-        <service id="mailer_from_factory"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer"
-                 factory-service="factory"
-                 factory-method="create">
-            <argument>string argument</argument>
-        </service>
-
-        <!-- factory class should be resolved -->
-        <service id="mailer_from_variable_factory"
-                 factory-class="%factory.class%"
-                 factory-method="create"
-                 class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
-            <argument>string argument</argument>
-         </service>
-
         <service id="mailer"
                  class="Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Mailer">
             <argument type="service" id="transport"/>
