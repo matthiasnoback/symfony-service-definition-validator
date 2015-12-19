@@ -73,16 +73,16 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
     {
         if (method_exists($definition, 'getFactoryClass')) {
             // Symfony <= 3.0.0
-            $factoryClass = $definition->getFactoryClass();
+            $factoryClass = $definition->getFactoryClass(false);
             if ($factoryClass) {
-                $this->validateFactoryClassAndMethod($factoryClass, $definition->getFactoryMethod());
+                $this->validateFactoryClassAndMethod($factoryClass, $definition->getFactoryMethod(false));
             }
         }
 
         if (method_exists($definition, 'getFactoryService')) {
-            $factoryService = $definition->getFactoryService();
+            $factoryService = $definition->getFactoryService(false);
             if ($factoryService) {
-                $this->validateFactoryServiceAndMethod($factoryService, $definition->getFactoryMethod());
+                $this->validateFactoryServiceAndMethod($factoryService, $definition->getFactoryMethod(false));
             }
         }
 

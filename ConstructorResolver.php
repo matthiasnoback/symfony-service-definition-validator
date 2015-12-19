@@ -111,15 +111,15 @@ class ConstructorResolver implements ConstructorResolverInterface
         }
 
         if (method_exists($definition, 'getFactoryClass')
-            && $definition->getFactoryClass()
-            && $definition->getFactoryMethod()) {
-            return array($definition->getFactoryClass(), $definition->getFactoryMethod());
+            && $definition->getFactoryClass(false)
+            && $definition->getFactoryMethod(false)) {
+            return array($definition->getFactoryClass(false), $definition->getFactoryMethod(false));
         }
 
         if (method_exists($definition, 'getFactoryService')
-            && $definition->getFactoryService()
-            && $definition->getFactoryMethod()) {
-            return array(new Reference($definition->getFactoryService()), $definition->getFactoryMethod());
+            && $definition->getFactoryService(false)
+            && $definition->getFactoryMethod(false)) {
+            return array(new Reference($definition->getFactoryService(false)), $definition->getFactoryMethod(false));
         }
 
         return null;
