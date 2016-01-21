@@ -8,6 +8,7 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchExcepti
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ExpressionLanguage;
+use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -41,6 +42,10 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     private function validateArrayArgument($argument)
     {
+        if ($argument instanceof Parameter) {
+            $argument = $this->containerBuilder->getParameter($argument);
+        }
+
         if (!is_array($argument)) {
             throw new TypeHintMismatchException(sprintf(
                 'Argument of type "%s" should have been an array',

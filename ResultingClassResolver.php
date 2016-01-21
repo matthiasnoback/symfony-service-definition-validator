@@ -4,6 +4,7 @@ namespace Matthias\SymfonyServiceDefinitionValidator;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Parameter;
 
 class ResultingClassResolver implements ResultingClassResolverInterface
 {
@@ -17,6 +18,10 @@ class ResultingClassResolver implements ResultingClassResolverInterface
     public function resolve(Definition $definition)
     {
         $class = $definition->getClass();
+
+        if ($class instanceof Parameter) {
+            $class = $this->containerBuilder->getParameter($class);
+        }
 
         return $this->resolvePlaceholders($class);
     }
