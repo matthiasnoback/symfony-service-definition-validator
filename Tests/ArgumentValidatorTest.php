@@ -84,6 +84,22 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($parameter, $argument);
     }
 
+    public function testFailsWhenOptionalParameterHasArrayTypeHintAndResultOfExpressionIsNullButNullIsNotAllowed()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithOptionalArrayConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'options');
+        $argument = null;
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        try {
+            $validator->validate($parameter, $argument);
+        } catch (TypeHintMismatchException $exception) {
+            $this->fail('null argument should be allowed');
+        }
+    }
+
     public function testFailsWhenResultOfExpressionIsNotAnObjectOfTheExpectedClass()
     {
         $this->skipTestIfExpressionsAreNotAvailable();
