@@ -41,6 +41,10 @@ please attach a copy of the error message and the relevant lines in ``app/cache/
 
 ## Usage
 
+If you have an existing Symfony application and you want to ensure that the service definitions are always valid the easiest way is to add the compiler pass to your bundle as described [here](https://github.com/matthiasnoback/symfony-service-definition-validator#compiler-pass). That will validate your service definitions every time the bundle is compiled, which happens every single request if the cache is turned off (the default in debug mode).
+
+If you want to validate the service definitions separately, like in a console command or in a test, you'll need to set it up yourself as described [here](https://github.com/matthiasnoback/symfony-service-definition-validator#service-validator-factory).
+
 ### Service validator factory
 
 You can use the stand-alone validator for single definitions:
