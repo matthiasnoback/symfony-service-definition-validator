@@ -43,7 +43,7 @@ please attach a copy of the error message and the relevant lines in ``app/cache/
 
 If you have an existing Symfony application and you want to ensure that the service definitions are always valid the easiest way is to add the compiler pass to your bundle as described [here](https://github.com/matthiasnoback/symfony-service-definition-validator#compiler-pass). That will validate your service definitions every time the bundle is compiled, which happens every single request if the cache is turned off (the default in debug mode).
 
-If you want to validate the service definitions separately, like in a console command or in a test, you'll need to set it up yourself as described [here](https://github.com/matthiasnoback/symfony-service-definition-validator#service-validator-factory).
+If you want to validate the service definitions in phpunit for a Symfony project follow the steps [here](https://github.com/matthiasnoback/symfony-service-definition-validator#running-the-validator-in-phpunit).
 
 ### Service validator factory
 
@@ -113,6 +113,26 @@ class SomeBundle extends Bundle
 
 This compiler pass will throw an exception. The message of this exception will contain a list
 of invalid service definitions.
+
+### Running the validator in phpunit
+In Symfony, adding the compiler pass will validate your services each time the page is loaded in your browser or when you use a command. But what if you want to run the validator on demand using PHPUnit? To do this, first set up the compiler pass as explained above and then create a new phpunit test with this inside:
+```php
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class ContainerServiceDefinitionsTest extends WebTestCase
+{
+    /**
+     * @test
+     */
+    public function validateServiceDefinitions()
+    {
+        $kernel = static::createKernel();
+
+        $kernel->boot();
+    }
+```
+
+This simple functional test just boots up the symfony kernel using the "test" environment. If you look back to the code you added to set up the compiler pass you'll see that we enabled the validator for the "test" environment too. So this simple phpunit test will validate the services each time it is run.
 
 ### Configure the validator
 
