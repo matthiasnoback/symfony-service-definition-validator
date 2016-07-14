@@ -130,6 +130,7 @@ class ContainerServiceDefinitionsTest extends WebTestCase
 
         $kernel->boot();
     }
+}
 ```
 
 This simple functional test just boots up the symfony kernel using the "test" environment. If you look back to the code you added to set up the compiler pass you'll see that we enabled the validator for the "test" environment too. So this simple phpunit test will validate the services each time it is run.
