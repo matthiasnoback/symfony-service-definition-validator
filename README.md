@@ -114,8 +114,8 @@ class SomeBundle extends Bundle
 This compiler pass will throw an exception. The message of this exception will contain a list
 of invalid service definitions.
 
-### Running the validator in phpunit
-In Symfony, adding the compiler pass will validate your services each time the page is loaded in your browser or when you use a command. But what if you want to run the validator on demand using PHPUnit? To do this, first set up the compiler pass as explained above and then create a new phpunit test with this inside:
+### Running the validator in PHPUnit
+In Symfony, adding the compiler pass will validate your services each time the page is loaded in your browser or when you use a command. But what if you want to run the validator on demand using PHPUnit? To do this, first set up the compiler pass as explained above and then create a new PHPUnit test with this inside:
 ```php
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -133,7 +133,9 @@ class ContainerServiceDefinitionsTest extends WebTestCase
 }
 ```
 
-This simple functional test just boots up the symfony kernel using the "test" environment. If you look back to the code you added to set up the compiler pass you'll see that we enabled the validator for the "test" environment too. So this simple phpunit test will validate the services each time it is run.
+This simple functional test just boots up the symfony kernel using the "test" environment. If you look back to the code you added to set up the compiler pass you'll see that we enabled the validator for the "test" environment too. So this simple PHPUnit test will validate the services each time it is run.
+
+In fact, if you already have functional tests you don't need this test, since the kernel will be booted (and therefore the services will be validated) in the other functional tests. The example test above is only needed if you don't already have any Symfony functional tests of your application.
 
 ### Configure the validator
 
