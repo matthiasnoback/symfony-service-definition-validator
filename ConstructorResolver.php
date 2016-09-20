@@ -36,6 +36,10 @@ class ConstructorResolver implements ConstructorResolverInterface
             return $this->resolveFactoryServiceWithMethod((string) $factory[0], $factory[1]);
         }
 
+        if (is_array($factory) && $factory[0] instanceof Definition) {
+            return $this->resolveFactoryServiceDefinitionWithMethod($factory[0], $factory[1]);
+        }
+
         if (is_array($factory)) {
             return $this->resolveFactoryClassWithMethod($factory[0], $factory[1]);
         }
@@ -132,5 +136,16 @@ class ConstructorResolver implements ConstructorResolverInterface
         }
 
         return new \ReflectionFunction($factory);
+    }
+
+    private function resolveFactoryServiceDefinitionWithMethod(Definition $factoryDefinition, $factoryMethod)
+    {
+        $factoryClass = $this->resultingClassResolver->resolve($factoryDefinition);
+
+        if (!method_exists($factoryClass, $factoryMethod)) {
+            throw new MethodNotFoundException($factoryClass, $factoryMethod);
+        }
+
+        return new \ReflectionMethod($factoryClass, $factoryMethod);
     }
 }
