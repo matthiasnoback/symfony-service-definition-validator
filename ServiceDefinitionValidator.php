@@ -9,7 +9,6 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodExc
 use Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference;
 
 class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
 {
@@ -95,6 +94,8 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
             list($factoryClassOrService, $method) = $factory;
             if (is_string($factoryClassOrService)) {
                 $this->validateFactoryClassAndMethod($factoryClassOrService, $method);
+            } elseif ($factoryClassOrService instanceof Definition) {
+                $this->validateFactoryServiceDefinitionAndMethod($factoryClassOrService, $method);
             } else {
                 $this->validateFactoryServiceAndMethod((string) $factoryClassOrService, $method);
             }
@@ -160,6 +161,17 @@ class ServiceDefinitionValidator implements ServiceDefinitionValidatorInterface
         }
 
         $factoryServiceDefinition = $this->containerBuilder->findDefinition($factoryServiceId);
+        $factoryClass = $factoryServiceDefinition->getClass();
+
+        $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);
+    }
+
+    private function validateFactoryServiceDefinitionAndMethod(Definition $factoryServiceDefinition, $factoryMethod)
+    {
+        if (!$factoryMethod) {
+            throw new MissingFactoryMethodException();
+        }
+
         $factoryClass = $factoryServiceDefinition->getClass();
 
         $this->validateFactoryClassAndMethod($factoryClass, $factoryMethod);

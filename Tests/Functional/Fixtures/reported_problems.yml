@@ -7,3 +7,14 @@ services:
             password: "password"
         calls:
             - [setAttribute, [3, 2]]
+
+    # Issue 33: https://github.com/matthiasnoback/symfony-service-definition-validator/issues/33
+    service_created_by_nonpublic_factory:
+        class: stdClass
+        factory: ["@nonpublic_factory", "create"]
+        arguments:
+            - required_argument
+
+    nonpublic_factory:
+        class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Factory
+        public: false
