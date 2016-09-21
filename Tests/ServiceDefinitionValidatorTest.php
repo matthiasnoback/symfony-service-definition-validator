@@ -228,6 +228,102 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
+    /**
+     * @test
+     */
+    public function factoryCanBeProvidedByServiceDefinition()
+    {
+        if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
+            $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
+        }
+
+        $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
+        $definition = new Definition('stdClass');
+        $definition->setFactory([$factoryDefinition, 'create']);
+
+        $containerBuilder = new ContainerBuilder();
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $validator->validate($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function ifFactoryProvidedByServiceDefinitionClassDoesNotExistFails()
+    {
+        if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
+            $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
+        }
+
+        $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\MissingFactoryClass');
+        $definition = new Definition('stdClass');
+        $definition->setFactory([$factoryDefinition, 'create']);
+
+        $containerBuilder = new ContainerBuilder();
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $validator->validate($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function ifFactoryProvidedByServiceDefinitionSpecifiedWithoutFactoryMethodFails()
+    {
+        if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
+            $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
+        }
+
+        $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
+        $definition = new Definition('stdClass');
+        $definition->setFactory([$factoryDefinition, '']);
+
+        $containerBuilder = new ContainerBuilder();
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
+        $validator->validate($definition);
+    }
+
+    /**
+     * @test
+     */
+    public function ifFactoryMethodDoesNotExistOnFactoryServiceProvidedByDefinitionFails()
+    {
+        if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
+            $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
+        }
+
+        $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
+        $definition = new Definition('stdClass');
+        $definition->setFactory([$factoryDefinition, 'nonExistingFactoryMethod']);
+
+        $containerBuilder = new ContainerBuilder();
+        $validator = new ServiceDefinitionValidator(
+            $containerBuilder,
+            $this->createMockDefinitionArgumentsValidator(),
+            $this->createMockMethodCallsValidator()
+        );
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
+        $validator->validate($definition);
+    }
+
+
     private function getNonExistingClassName()
     {
         return md5(rand(1, 999));
