@@ -286,7 +286,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
         $definition = new Definition('stdClass');
-        $definition->setFactory(array($factoryDefinition, 'create'));
+        $definition->setFactory(array($factoryDefinition, ''));
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
