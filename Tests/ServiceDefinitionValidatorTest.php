@@ -239,7 +239,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
         $definition = new Definition('stdClass');
-        $definition->setFactory([$factoryDefinition, 'create']);
+        $definition->setFactory(array($factoryDefinition, 'create'));
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
@@ -262,7 +262,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\MissingFactoryClass');
         $definition = new Definition('stdClass');
-        $definition->setFactory([$factoryDefinition, 'create']);
+        $definition->setFactory(array($factoryDefinition, 'create'));
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
@@ -286,7 +286,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
         $definition = new Definition('stdClass');
-        $definition->setFactory([$factoryDefinition, '']);
+        $definition->setFactory(array($factoryDefinition, 'create'));
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
@@ -310,7 +310,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         $factoryDefinition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\FactoryClass');
         $definition = new Definition('stdClass');
-        $definition->setFactory([$factoryDefinition, 'nonExistingFactoryMethod']);
+        $definition->setFactory(array($factoryDefinition, 'nonExistingFactoryMethod'));
 
         $containerBuilder = new ContainerBuilder();
         $validator = new ServiceDefinitionValidator(
