@@ -185,6 +185,38 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($parameter, $argument);
     }
 
+    public function testContainerReferenceArgumentDoesNotFail()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithContainerInterfaceConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'container');
+        $argument = new Reference('service_container');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testFailsIfContainerReferenceArgumentIsInjectedForParameterWithIncompatibleTypeHint()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Reference('service_container');
+
+        $classResolver = $this->createMockResultingClassResolver();
+        $classResolver
+            ->expects($this->any())
+            ->method('resolve')
+            ->with(new Definition('Symfony\Component\DependencyInjection\Container'))
+            ->willReturn('Symfony\Component\DependencyInjection\Container');
+        $validator = new ArgumentValidator(new ContainerBuilder(), $classResolver);
+
+        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+
+        $validator->validate($parameter, $argument);
+    }
+
     private function createMockResultingClassResolver()
     {
         return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolverInterface');

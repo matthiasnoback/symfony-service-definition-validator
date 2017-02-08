@@ -74,8 +74,13 @@ class ArgumentValidator implements ArgumentValidatorInterface
     {
         // the __toString method of a Reference is the referenced service id
         $referencedServiceId = (string)$reference;
-        $definition = $this->containerBuilder->findDefinition($referencedServiceId);
-        // we don't have to check if the definition exists, since the ContainerBuilder itself does that already
+
+        if ('service_container' !== $referencedServiceId) {
+            $definition = $this->containerBuilder->findDefinition($referencedServiceId);
+            // we don't have to check if the definition exists, since the ContainerBuilder itself does that already
+        } else {
+            $definition = new Definition('Symfony\Component\DependencyInjection\Container');
+        }
 
         $this->validateDefinitionArgument($className, $definition);
     }
