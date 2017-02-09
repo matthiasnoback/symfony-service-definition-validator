@@ -40,5 +40,9 @@ install:
 script:
   - vendor/bin/phpunit
 
+script:
+  - curl -sS http://bldr.io/installer | php
+  - php bldr.phar build travis
+
 notifications:
   email: matthiasnoback@gmail.com
