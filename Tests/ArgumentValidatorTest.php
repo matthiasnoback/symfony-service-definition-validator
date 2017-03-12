@@ -185,14 +185,38 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($parameter, $argument);
     }
 
-    public function testContainerReferenceArgumentDoesNotFail()
+    public function testContainerInterfaceReferenceArgumentDoesNotFail()
     {
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithContainerInterfaceConstructorArgument';
 
         $parameter = new \ReflectionParameter(array($class, '__construct'), 'container');
         $argument = new Reference('service_container');
 
-        $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
+        $classResolver = $this->createMockResultingClassResolver();
+        $classResolver
+            ->expects($this->any())
+            ->method('resolve')
+            ->willReturn('Symfony\Component\DependencyInjection\ContainerBuilder');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $classResolver);
+
+        $validator->validate($parameter, $argument);
+    }
+
+    public function testContainerBuilderReferenceArgumentDoesNotFail()
+    {
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithContainerBuilderConstructorArgument';
+
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'container');
+        $argument = new Reference('service_container');
+
+        $classResolver = $this->createMockResultingClassResolver();
+        $classResolver
+            ->expects($this->any())
+            ->method('resolve')
+            ->willReturn('Symfony\Component\DependencyInjection\ContainerBuilder');
+
+        $validator = new ArgumentValidator(new ContainerBuilder(), $classResolver);
 
         $validator->validate($parameter, $argument);
     }
@@ -208,8 +232,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $classResolver
             ->expects($this->any())
             ->method('resolve')
-            ->with(new Definition('Symfony\Component\DependencyInjection\Container'))
-            ->willReturn('Symfony\Component\DependencyInjection\Container');
+            ->willReturn('Symfony\Component\DependencyInjection\ContainerBuilder');
         $validator = new ArgumentValidator(new ContainerBuilder(), $classResolver);
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
