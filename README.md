@@ -129,6 +129,11 @@ class ContainerServiceDefinitionsTest extends WebTestCase
         $kernel = static::createKernel();
 
         $kernel->boot();
+    
+        $bootedProperty = (new \ReflectionObject($kernel))
+            ->getProperty('booted');
+        $bootedProperty->setAccessible(true);
+        self::assertTrue($bootedProperty->getValue($kernel));
     }
 }
 ```
