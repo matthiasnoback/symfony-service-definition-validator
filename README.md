@@ -127,8 +127,10 @@ class ContainerServiceDefinitionsTest extends WebTestCase
     public function validateServiceDefinitions()
     {
         $kernel = static::createKernel();
-
         $kernel->boot();
+
+        // Add assertion to phpunit count which will prevent marking test as "risky"
+        $this->addToAssertionCount(1);
     }
 }
 ```
