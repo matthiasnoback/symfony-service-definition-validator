@@ -2,7 +2,7 @@
     "name": "matthiasnoback/symfony-service-definition-validator",
     "type": "library",
     "description": "Library for validating service definitions created with the Symfony Dependency Injection Component",
-    "keywords": ["symfony2", "dependency injection"],
+    "keywords": ["symfony", "dependency injection"],
     "homepage": "http://github.com/matthiasnoback/symfony-service-definition-validator",
     "license": "MIT",
     "authors": [
@@ -13,12 +13,13 @@
         }
     ],
     "require": {
-        "symfony/dependency-injection": "~2.0|~3.0"
+        "php":                          "^5.3.9|^7.0",
+        "symfony/dependency-injection": "^2.7|^3.0|^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
-        "symfony/config": "~2.0|~3.0",
-        "symfony/expression-language": "~2.4|~3.0"
+        "phpunit/phpunit":              "^4.8|^5.7",
+        "symfony/config":               "^2.7|^3.0|^4.0",
+        "symfony/expression-language":  "^2.7|^3.0|^4.0"
     },
     "autoload": {
         "psr-4" : { "Matthias\\SymfonyServiceDefinitionValidator\\" : "" }
