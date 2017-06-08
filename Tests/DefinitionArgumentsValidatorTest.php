@@ -7,10 +7,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @test
-     */
-    public function ifDefinitionIsAbstractDefinitionSkipsValidation()
+    public function testIfDefinitionIsAbstractDefinitionSkipsValidation()
     {
         $definition = new Definition();
         $definition->setAbstract(true);
@@ -25,10 +22,7 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifDefinitionIsSyntheticSkipsValidation()
+    public function testIfDefinitionIsSyntheticSkipsValidation()
     {
         $definition = new Definition();
         $definition->setSynthetic(true);
@@ -43,10 +37,7 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifNoConstructorCouldBeFoundSkipsValidation()
+    public function testIfNoConstructorCouldBeFoundSkipsValidation()
     {
         $class = 'stdClass';
         $definition = new Definition($class);
@@ -68,10 +59,7 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifConstructorIsFoundValidatesUsingArgumentsValidator()
+    public function testIfConstructorIsFoundValidatesUsingArgumentsValidator()
     {
         $definition = new Definition();
         $arguments = array(0 => 'argument1', 1 => 'argument2');
@@ -96,10 +84,7 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function itConvertsAnAssociativeArrayOfArgumentsToANumericallyIndexedOrderedArray()
+    public function testItConvertsAnAssociativeArrayOfArgumentsToANumericallyIndexedOrderedArray()
     {
         $definition = new Definition();
         $arguments = array('named_argument1' => 'argument1', 'named_argument2' => 'argument2');
@@ -128,11 +113,11 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockConstructorResolver()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ConstructorResolverInterface');
+        return $this->getMockBuilder('Matthias\SymfonyServiceDefinitionValidator\ConstructorResolverInterface')->getMock();
     }
 
     private function createMockArgumentsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ArgumentsValidatorInterface');
+        return $this->getMockBuilder('Matthias\SymfonyServiceDefinitionValidator\ArgumentsValidatorInterface')->getMock();
     }
 }

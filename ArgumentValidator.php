@@ -31,7 +31,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
     public function validate(\ReflectionParameter $parameter, $argument)
     {
         if ($parameter->isArray()) {
-            if ($parameter->allowsNull() && is_null($argument)) {
+            if (null === $argument && $parameter->allowsNull()) {
                 return;
             }
             $this->validateArrayArgument($argument);
@@ -141,9 +141,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
             ));
         }
 
-        $resultingClass = get_class($result);
-
-        $this->validateClass($className, $resultingClass);
+        $this->validateClass($className, get_class($result));
     }
 
     private function validateClass($expectedClassName, $actualClassName)
@@ -152,8 +150,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
             return;
         }
 
-        $reflectionClass = new \ReflectionClass($actualClassName);
-        if (!$reflectionClass->isSubclassOf($expectedClassName)) {
+        if (!is_a($actualClassName, $expectedClassName, true)) {
             throw new TypeHintMismatchException(sprintf(
                 'Argument for type-hint "%s" points to a service of class "%s"',
                 $expectedClassName,

@@ -10,10 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @test
-     */
-    public function ifConstructorDoesNotExistResolvedConstructorIsNull()
+    public function testIfConstructorDoesNotExistResolvedConstructorIsNull()
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -24,10 +21,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($resolver->resolve($definition));
     }
 
-    /**
-     * @test
-     */
-    public function ifConstructorExistsResolvedConstructorIsConstructorMethod()
+    public function testIfConstructorExistsResolvedConstructorIsConstructorMethod()
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -39,10 +33,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedConstructor, $resolver->resolve($definition));
     }
 
-    /**
-     * @test
-     */
-    public function ifConstructorIsNotPublicItFails()
+    public function testIfConstructorIsNotPublicItFails()
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -51,15 +42,17 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithNonPublicConstructor');
 
         $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException');
-        $this->assertSame(null, $resolver->resolve($definition));
+        $this->assertNull($resolver->resolve($definition));
     }
 
     /**
-     * @test
      * @dataProvider getFactoryServiceAndFactoryMethodAreDefinedData
      */
-    public function ifFactoryServiceAndFactoryMethodAreDefinedResolvedConstructorIsFactoryMethod($factoryClass, Definition $definition, \ReflectionMethod $expectedConstructor)
-    {
+    public function testIfFactoryServiceAndFactoryMethodAreDefinedResolvedConstructorIsFactoryMethod(
+        $factoryClass,
+        Definition $definition,
+        \ReflectionMethod $expectedConstructor
+    ) {
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->register('factory', $factoryClass);
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -95,11 +88,12 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
      * @dataProvider getFactoryClassAndFactoryMethodAreDefinedData
      */
-    public function ifFactoryClassAndFactoryMethodAreDefinedResolvedConstructorIsFactoryMethod(Definition $definition, \ReflectionMethod $expectedConstructor)
-    {
+    public function testIfFactoryClassAndFactoryMethodAreDefinedResolvedConstructorIsFactoryMethod(
+        Definition $definition,
+        \ReflectionMethod $expectedConstructor
+    ) {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
@@ -133,10 +127,9 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
      * @dataProvider getFactoryClassDoesNotExistData
      */
-    public function ifFactoryClassDoesNotExistFails(Definition $definition)
+    public function testIfFactoryClassDoesNotExistFails(Definition $definition)
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -171,10 +164,9 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
      * @dataProvider getFactoryMethodIsNotStaticData
      */
-    public function ifFactoryMethodIsNotStaticItFails(Definition $definition)
+    public function testIfFactoryMethodIsNotStaticItFails(Definition $definition)
     {
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
@@ -208,10 +200,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         return $data;
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryIsStringIsFactoryCallback()
+    public function testIfFactoryIsStringIsFactoryCallback()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Support for callables as factories was introduced in Symfony 2.6');
@@ -226,10 +215,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new \ReflectionFunction('factoryCallback'), $resolver->resolve($definition));
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryFunctionDoesNotExistFails()
+    public function testIfFactoryFunctionDoesNotExistFails()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Support for callables as factories was introduced in Symfony 2.6');

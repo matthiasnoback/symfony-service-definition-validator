@@ -2,9 +2,9 @@ services:
     pdo:
         class: PDO
         arguments:
-            dsn: "mysql:dbname=dbname;host=host"
-            user: "user"
-            password: "password"
+            - "mysql:dbname=dbname;host=host"
+            - "user"
+            - "password"
         calls:
             - [setAttribute, [3, 2]]
 
