@@ -153,10 +153,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryServiceIsSpecifiedWithoutFactoryMethodFails()
+    public function testIfFactoryServiceIsSpecifiedWithoutFactoryMethodFails()
     {
         $definition = new Definition('stdClass');
         if (method_exists($definition, 'setFactoryService')) {
@@ -176,10 +173,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryServiceDoesNotExistFails()
+    public function testIfFactoryServiceDoesNotExistFails()
     {
         $definition = new Definition('stdClass');
         if (method_exists($definition, 'setFactoryService')) {
@@ -201,10 +195,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryMethodDoesNotExistOnFactoryServiceFails()
+    public function testIfFactoryMethodDoesNotExistOnFactoryServiceFails()
     {
         $containerBuilder = new ContainerBuilder();
         $factoryDefinition = new Definition('stdClass');
@@ -228,10 +219,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function factoryCanBeProvidedByServiceDefinition()
+    public function testFactoryCanBeProvidedByServiceDefinition()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
@@ -251,10 +239,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryProvidedByServiceDefinitionClassDoesNotExistFails()
+    public function testIfFactoryProvidedByServiceDefinitionClassDoesNotExistFails()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
@@ -275,10 +260,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryProvidedByServiceDefinitionSpecifiedWithoutFactoryMethodFails()
+    public function testIfFactoryProvidedByServiceDefinitionSpecifiedWithoutFactoryMethodFails()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
@@ -299,10 +281,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($definition);
     }
 
-    /**
-     * @test
-     */
-    public function ifFactoryMethodDoesNotExistOnFactoryServiceProvidedByDefinitionFails()
+    public function testIfFactoryMethodDoesNotExistOnFactoryServiceProvidedByDefinitionFails()
     {
         if (!method_exists('Symfony\Component\DependencyInjection\Definition', 'getFactory')) {
             $this->markTestSkipped('Factory can be provided by service definition since Symfony 2.6');
@@ -326,7 +305,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function getNonExistingClassName()
     {
-        return md5(rand(1, 999));
+        return md5(mt_rand(1, 999));
     }
 
     /**
@@ -334,7 +313,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
      */
     private function createMockDefinitionArgumentsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface');
+        return $this->getMockBuilder('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface')->getMock();
     }
 
     /**
@@ -342,6 +321,6 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
      */
     private function createMockMethodCallsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface');
+        return $this->getMockBuilder('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface')->getMock();
     }
 }

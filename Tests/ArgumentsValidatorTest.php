@@ -7,10 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @test
-     */
-    public function ifRequiredArgumentIsMissingFails()
+    public function testIfRequiredArgumentIsMissingFails()
     {
         $validator = new ArgumentsValidator($this->createMockArgumentValidator());
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithRequiredConstructorArguments';
@@ -23,6 +20,6 @@ class ArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockArgumentValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ArgumentValidatorInterface');
+        return $this->getMockBuilder('Matthias\SymfonyServiceDefinitionValidator\ArgumentValidatorInterface')->getMock();
     }
 }
