@@ -79,7 +79,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
             $definition = $this->containerBuilder->findDefinition($referencedServiceId);
             // we don't have to check if the definition exists, since the ContainerBuilder itself does that already
         } else {
-            $definition = new Definition('Symfony\Component\DependencyInjection\Container');
+            $definition = new Definition('Symfony\Component\DependencyInjection\ContainerBuilder');
         }
 
         $this->validateDefinitionArgument($className, $definition);
