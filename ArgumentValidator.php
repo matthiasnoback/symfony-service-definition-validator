@@ -152,8 +152,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
             return;
         }
 
-        $reflectionClass = new \ReflectionClass($actualClassName);
-        if (!$reflectionClass->isSubclassOf($expectedClassName)) {
+        if (!is_a($actualClassName, $expectedClassName, true)) {
             throw new TypeHintMismatchException(sprintf(
                 'Argument for type-hint "%s" points to a service of class "%s"',
                 $expectedClassName,

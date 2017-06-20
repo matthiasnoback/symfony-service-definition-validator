@@ -197,6 +197,25 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
         $validator->validate($parameter, $argument);
     }
 
+    public function testPassesWhenArgumentIsClassAlias()
+    {
+        class_alias('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ExpectedClass', 'AliasedExpectedClass');
+        $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedAliasConstructorArgument';
+        $this->containerBuilder = new ContainerBuilder();
+        $definition = new Definition();
+        $this->containerBuilder->setDefinition('referenced_service', $definition);
+        $parameter = new \ReflectionParameter(array($class, '__construct'), 'expected');
+        $argument = new Reference('referenced_service');
+        $resultingClassResolver = $this->createMockResultingClassResolver();
+        $resultingClassResolver
+            ->expects($this->once())
+            ->method('resolve')
+            ->with($definition)
+            ->will($this->returnValue('\AliasedExpectedClass'));
+        $validator = new ArgumentValidator($this->containerBuilder, $resultingClassResolver);
+        $validator->validate($parameter, $argument);
+    }
+
     public function testFailsIfContainerReferenceArgumentIsInjectedForParameterWithIncompatibleTypeHint()
     {
         $class = 'Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithTypeHintedConstructorArgument';
