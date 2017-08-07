@@ -10,7 +10,7 @@ By Matthias Noback
 
 Using Composer:
 
-    php composer.phar require matthiasnoback/symfony-service-definition-validator ~1
+    php composer.phar require matthiasnoback/symfony-service-definition-validator
 
 ## Problems the validator can spot
 
