@@ -48,6 +48,8 @@ class FunctionalTest extends TestCase
         }
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionWithAnExpressionArgumentIsCorrectTheContainerWillBeCompiled()
@@ -62,6 +64,8 @@ class FunctionalTest extends TestCase
         $loader->load('service_definition_with_expression.xml');
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionWithAFactoryIsCorrectTheContainerWillBeCompiled()
@@ -74,6 +78,8 @@ class FunctionalTest extends TestCase
         $loader->load('service_definition_with_factory.xml');
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()

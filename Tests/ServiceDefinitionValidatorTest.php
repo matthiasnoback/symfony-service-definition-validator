@@ -41,6 +41,8 @@ class ServiceDefinitionValidatorTest extends TestCase
         );
 
         $validator->validate($definition);
+
+        $this->addToAssertionCount(1);
     }
 
     public function testSyntheticDefinitionCanHaveNoClass()
@@ -56,6 +58,7 @@ class ServiceDefinitionValidatorTest extends TestCase
 
         try {
             $validator->validate($definition);
+            $this->addToAssertionCount(1);
         } catch (DefinitionHasNoClassException $e) {
             $this->fail('Synthetic definitions should be allowed to have no class');
         }
@@ -74,6 +77,7 @@ class ServiceDefinitionValidatorTest extends TestCase
 
         try {
             $validator->validate($definition);
+            $this->addToAssertionCount(1);
         } catch (DefinitionHasNoClassException $e) {
             $this->fail('Abstract definitions should be allowed to have no class');
         }
@@ -90,6 +94,7 @@ class ServiceDefinitionValidatorTest extends TestCase
         try {
             // The choice for Serializable is arbitrary, any PHP interface would do
             $validator->validate(new Definition('Serializable'));
+            $this->addToAssertionCount(1);
         } catch (ClassNotFoundException $e) {
             $this->fail('Definition should be allowed to have an interface as class');
         }
@@ -251,6 +256,8 @@ class ServiceDefinitionValidatorTest extends TestCase
         );
 
         $validator->validate($definition);
+
+        $this->addToAssertionCount(1);
     }
 
     /**

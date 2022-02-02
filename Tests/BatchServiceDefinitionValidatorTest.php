@@ -5,6 +5,7 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 use Matthias\SymfonyServiceDefinitionValidator\BatchServiceDefinitionValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\InvalidServiceDefinitionException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Definition;
 
 class BatchServiceDefinitionValidatorTest extends TestCase
 {
@@ -34,8 +35,6 @@ class BatchServiceDefinitionValidatorTest extends TestCase
 
         $exception = $this->createException();
 
-
-
         $errorFactory
             ->expects($this->once())
             ->method('createValidationError')
@@ -43,15 +42,14 @@ class BatchServiceDefinitionValidatorTest extends TestCase
             ->will($this->returnValue($error));
 
         $validator = $this->createMockValidator();
-        $validator
-            ->expects($this->at(0))
-            ->method('validate')
-            ->with($goodDefinition);
-        $validator
-            ->expects($this->at(1))
-            ->method('validate')
-            ->with($badDefinition)
-            ->will($this->throwException($exception));
+        $validator->method('validate')
+            ->willReturnCallback(
+                function (Definition $definition) use ($exception, &$badDefinition) {
+                    if ($definition === $badDefinition) {
+                        throw $exception;
+                    }
+                }
+            );
 
         $batchValidator = new BatchServiceDefinitionValidator($validator, $errorFactory);
         $result = $batchValidator->validate($definitions);

@@ -96,6 +96,7 @@ class ArgumentValidatorTest extends TestCase
 
         try {
             $validator->validate($parameter, $argument);
+            $this->addToAssertionCount(1);
         } catch (TypeHintMismatchException $exception) {
             $this->fail('null argument should be allowed');
         }
@@ -149,6 +150,7 @@ class ArgumentValidatorTest extends TestCase
 
         try {
             $validator->validate($parameter, $argument);
+            $this->addToAssertionCount(1);
         } catch (TypeHintMismatchException $exception) {
             $this->fail('null argument should be allowed');
         }
@@ -196,6 +198,7 @@ class ArgumentValidatorTest extends TestCase
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
 
         $validator->validate($parameter, $argument);
+        $this->addToAssertionCount(1);
     }
 
     public function testPassesWhenArgumentIsClassAlias()
