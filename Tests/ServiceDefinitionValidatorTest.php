@@ -7,11 +7,13 @@ use Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException;
 use Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface;
 use Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidator;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
+class ServiceDefinitionValidatorTest extends TestCase
 {
     public function testRecognizesMissingClass()
     {
@@ -23,7 +25,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\DefinitionHasNoClassException');
         $validator->validate($definition);
     }
 
@@ -39,6 +41,8 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         );
 
         $validator->validate($definition);
+
+        $this->addToAssertionCount(1);
     }
 
     public function testSyntheticDefinitionCanHaveNoClass()
@@ -54,6 +58,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         try {
             $validator->validate($definition);
+            $this->addToAssertionCount(1);
         } catch (DefinitionHasNoClassException $e) {
             $this->fail('Synthetic definitions should be allowed to have no class');
         }
@@ -72,6 +77,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
         try {
             $validator->validate($definition);
+            $this->addToAssertionCount(1);
         } catch (DefinitionHasNoClassException $e) {
             $this->fail('Abstract definitions should be allowed to have no class');
         }
@@ -88,6 +94,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         try {
             // The choice for Serializable is arbitrary, any PHP interface would do
             $validator->validate(new Definition('Serializable'));
+            $this->addToAssertionCount(1);
         } catch (ClassNotFoundException $e) {
             $this->fail('Definition should be allowed to have an interface as class');
         }
@@ -103,7 +110,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $validator->validate($definition);
     }
 
@@ -125,7 +132,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $validator->validate($definition);
     }
 
@@ -149,7 +156,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
         $validator->validate($definition);
     }
 
@@ -172,7 +179,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
         $validator->validate($definition);
     }
 
@@ -197,7 +204,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\ServiceNotFoundException');
         $validator->validate($definition);
     }
 
@@ -224,7 +231,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
         $validator->validate($definition);
     }
 
@@ -249,6 +256,8 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
         );
 
         $validator->validate($definition);
+
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -271,7 +280,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $validator->validate($definition);
     }
 
@@ -295,7 +304,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\MissingFactoryMethodException');
         $validator->validate($definition);
     }
 
@@ -319,7 +328,7 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
             $this->createMockMethodCallsValidator()
         );
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\MethodNotFoundException');
         $validator->validate($definition);
     }
 
@@ -330,18 +339,18 @@ class ServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|DefinitionArgumentsValidatorInterface
+     * @return MockObject&DefinitionArgumentsValidatorInterface
      */
     private function createMockDefinitionArgumentsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidatorInterface');
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|MethodCallsValidatorInterface
+     * @return MockObject&MethodCallsValidatorInterface
      */
     private function createMockMethodCallsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\MethodCallsValidatorInterface');
     }
 }

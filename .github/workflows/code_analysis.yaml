@@ -1,0 +1,34 @@
+name: Code Analysis
+
+on:
+    pull_request: null
+    push: null
+
+jobs:
+    code_analysis:
+        strategy:
+            fail-fast: false
+            matrix:
+                actions:
+                    -
+                        name: "Composer validate"
+                        run: composer validate
+
+                    -
+                        name: "PHPUnit"
+                        run: vendor/bin/phpunit --color
+
+        name: ${{ matrix.actions.name }}
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.4
+                    coverage: none
+
+            -   uses: "ramsey/composer-install@v1"
+
+            -   run: ${{ matrix.actions.run }}

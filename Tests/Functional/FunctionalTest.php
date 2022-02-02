@@ -4,20 +4,21 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Functional;
 
 use Matthias\SymfonyServiceDefinitionValidator\Compiler\ValidateServiceDefinitionsPass;
 use Matthias\SymfonyServiceDefinitionValidator\Configuration;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class FunctionalTest extends \PHPUnit_Framework_TestCase
+class FunctionalTest extends TestCase
 {
     /**
      * @var ContainerBuilder
      */
     private $container;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = new ContainerBuilder();
 
@@ -47,6 +48,8 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionWithAnExpressionArgumentIsCorrectTheContainerWillBeCompiled()
@@ -61,6 +64,8 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader->load('service_definition_with_expression.xml');
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionWithAFactoryIsCorrectTheContainerWillBeCompiled()
@@ -73,6 +78,8 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader->load('service_definition_with_factory.xml');
 
         $this->container->compile();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testIfAServiceDefinitionIsNotCorrectAnExceptionWillBeThrown()
@@ -80,7 +87,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
         $loader->load('incorrect_service_definitions.xml');
 
-        $this->setExpectedException(
+        $this->expectException(
             'Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidServiceDefinitionsException'
         );
         $this->container->compile();

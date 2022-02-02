@@ -4,8 +4,9 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Error\Printer;
 
 use Matthias\SymfonyServiceDefinitionValidator\Error\Printer\SimpleErrorListPrinter;
 use Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorList;
+use PHPUnit\Framework\TestCase;
 
-class SimpleErrorListPrinterTest extends \PHPUnit_Framework_TestCase
+class SimpleErrorListPrinterTest extends TestCase
 {
     public function testPrintsErrorMessageInAList()
     {
@@ -34,7 +35,7 @@ EOT;
 
     private function createMockError($serviceId, \Exception $exception)
     {
-        $error = $this->getMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorInterface');
+        $error = $this->createMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorInterface');
 
         $error
             ->expects($this->any())

@@ -3,9 +3,10 @@
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\DefinitionArgumentsValidator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Definition;
 
-class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
+class DefinitionArgumentsValidatorTest extends TestCase
 {
     /**
      * @test
@@ -128,11 +129,11 @@ class DefinitionArgumentsValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockConstructorResolver()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ConstructorResolverInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\ConstructorResolverInterface');
     }
 
     private function createMockArgumentsValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ArgumentsValidatorInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\ArgumentsValidatorInterface');
     }
 }

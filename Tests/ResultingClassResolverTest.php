@@ -3,10 +3,11 @@
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolver;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-class ResultingClassResolverTest extends \PHPUnit_Framework_TestCase
+class ResultingClassResolverTest extends TestCase
 {
     public function testReturnsClassOfDefinition()
     {
