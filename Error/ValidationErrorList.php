@@ -11,12 +11,12 @@ class ValidationErrorList implements \IteratorAggregate, ValidationErrorListInte
         $this->errors[] = $error;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->errors);
     }
 
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->errors);
     }

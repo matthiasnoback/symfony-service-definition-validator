@@ -14,7 +14,7 @@ class InvalidExpressionSyntaxException extends \RuntimeException implements Defi
                 $expression,
                 $exception->getMessage()
             ),
-            null,
+            0,
             $exception
         );
     }

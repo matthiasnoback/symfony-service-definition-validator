@@ -12,7 +12,7 @@ class InvalidExpressionException extends \RuntimeException implements Definition
                 $expression,
                 $exception->getMessage()
             ),
-            null,
+            0,
             $exception
         );
     }
