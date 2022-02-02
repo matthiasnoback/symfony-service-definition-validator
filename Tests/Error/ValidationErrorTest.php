@@ -3,8 +3,9 @@
 namespace Matthias\SymfonyServiceDefinitionValidator\Tests\Error;
 
 use Matthias\SymfonyServiceDefinitionValidator\Error\ValidationError;
+use PHPUnit\Framework\TestCase;
 
-class ValidationErrorTest extends \PHPUnit_Framework_TestCase
+class ValidationErrorTest extends TestCase
 {
     public function testConstructor()
     {
@@ -29,8 +30,6 @@ class ValidationErrorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockException()
     {
-        return $this
-            ->getMockBuilder('\Exception')
-            ->getMock();
+        return $this->createMock('\Exception');
     }
 }

@@ -4,8 +4,9 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\BatchServiceDefinitionValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\InvalidServiceDefinitionException;
+use PHPUnit\Framework\TestCase;
 
-class BatchServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
+class BatchServiceDefinitionValidatorTest extends TestCase
 {
     public function testCreatesErrorListAndTransformsValidationExceptionIntoErrors()
     {
@@ -60,12 +61,12 @@ class BatchServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockErrorFactory()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorFactoryInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorFactoryInterface');
     }
 
     private function createMockErrorList()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\Tests\Error\ValidationErrorListInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\Tests\Error\ValidationErrorListInterface');
     }
 
     private function createMockDefinition()
@@ -78,7 +79,7 @@ class BatchServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockValidator()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidatorInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\ServiceDefinitionValidatorInterface');
     }
 
     private function createException()
@@ -88,6 +89,6 @@ class BatchServiceDefinitionValidatorTest extends \PHPUnit_Framework_TestCase
 
     private function createMockError()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\Error\ValidationErrorInterface');
     }
 }

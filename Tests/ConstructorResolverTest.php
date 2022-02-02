@@ -4,11 +4,12 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\ConstructorResolver;
 use Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolver;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
+class ConstructorResolverTest extends TestCase
 {
     /**
      * @test
@@ -50,7 +51,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         // ClassWithNonPublicConstructor has a non-public constructor
         $definition = new Definition('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\ClassWithNonPublicConstructor');
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonPublicConstructorException');
         $this->assertSame(null, $resolver->resolve($definition));
     }
 
@@ -141,7 +142,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\ClassNotFoundException');
         $resolver->resolve($definition);
     }
 
@@ -179,7 +180,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $containerBuilder = new ContainerBuilder();
         $resolver = new ConstructorResolver($containerBuilder, new ResultingClassResolver($containerBuilder));
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonStaticFactoryMethodException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\NonStaticFactoryMethodException');
         $resolver->resolve($definition);
     }
 
@@ -241,7 +242,7 @@ class ConstructorResolverTest extends \PHPUnit_Framework_TestCase
         $definition = new Definition();
         $definition->setFactory('NotExistingFactoryCallback');
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\FunctionNotFoundException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\FunctionNotFoundException');
         $resolver->resolve($definition);
     }
 }

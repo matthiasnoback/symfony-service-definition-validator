@@ -4,16 +4,17 @@ namespace Matthias\SymfonyServiceDefinitionValidator\Tests;
 
 use Matthias\SymfonyServiceDefinitionValidator\ArgumentValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
+class ArgumentValidatorTest extends TestCase
 {
     private $containerBuilder;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->containerBuilder = new ContainerBuilder();
     }
@@ -24,7 +25,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator($this->containerBuilder, $this->createMockResultingClassResolver());
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'reference');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'reference');
         $validator->validate(new \ReflectionParameter(array($class, '__construct'), 'expected'), new \stdClass());
     }
 
@@ -43,7 +44,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('Matthias\SymfonyServiceDefinitionValidator\Tests\Fixtures\WrongClass'));
         $validator = new ArgumentValidator($this->containerBuilder, $resultingClassResolver);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
         $validator->validate(new \ReflectionParameter(array($class, '__construct'), 'expected'), $inlineDefinition);
     }
 
@@ -65,7 +66,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('stdClass'));
         $validator = new ArgumentValidator($this->containerBuilder, $resultingClassResolver);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
         $validator->validate($parameter, $argument);
     }
@@ -79,7 +80,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'array');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'array');
 
         $validator->validate($parameter, $argument);
     }
@@ -114,7 +115,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator($containerBuilder, $this->createMockResultingClassResolver(), true);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
         $validator->validate($parameter, $argument);
     }
@@ -130,7 +131,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver(), true);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
         $validator->validate($parameter, $argument);
     }
@@ -164,7 +165,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver());
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionSyntaxException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionSyntaxException');
 
         $validator->validate($parameter, $argument);
     }
@@ -180,7 +181,7 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
 
         $validator = new ArgumentValidator(new ContainerBuilder(), $this->createMockResultingClassResolver(), true);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException');
 
         $validator->validate($parameter, $argument);
     }
@@ -231,14 +232,14 @@ class ArgumentValidatorTest extends \PHPUnit_Framework_TestCase
             ->willReturn('Symfony\Component\DependencyInjection\Container');
         $validator = new ArgumentValidator(new ContainerBuilder(), $classResolver);
 
-        $this->setExpectedException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
+        $this->expectException('Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException', 'ExpectedClass');
 
         $validator->validate($parameter, $argument);
     }
 
     private function createMockResultingClassResolver()
     {
-        return $this->getMock('Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolverInterface');
+        return $this->createMock('Matthias\SymfonyServiceDefinitionValidator\ResultingClassResolverInterface');
     }
 
     private function skipTestIfExpressionsAreNotAvailable()
