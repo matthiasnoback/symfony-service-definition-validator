@@ -41,7 +41,7 @@ class ArgumentsValidator implements ArgumentsValidatorInterface
             return false;
         }
 
-        if ($parameter->getClass() && $parameter->allowsNull()) {
+        if ($parameter->getType() instanceof \ReflectionType && $parameter->getType()->allowsNull()) {
             // e.g. LoggerInterface $logger = null
             return false;
         }

@@ -30,10 +30,15 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     public function validate(\ReflectionParameter $parameter, $argument)
     {
-        if ($parameter->isArray()) {
+        $parameterType = $parameter->getType();
+        if ($parameterType === null) {
+            return;
+        }
+
+        if ($parameterType->getName() === 'array') {
             $this->validateArrayArgument($parameter, $argument);
-        } elseif ($parameter->getClass()) {
-            $this->validateObjectArgument($parameter->getClass()->getName(), $argument, $parameter->allowsNull());
+        } elseif (class_exists($parameterType->getName())) {
+            $this->validateObjectArgument($parameterType->getName(), $argument, $parameter->allowsNull());
         }
 
         // other arguments don't need to be or can't be validated
