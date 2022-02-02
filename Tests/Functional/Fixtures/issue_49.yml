@@ -1,0 +1,12 @@
+parameters:
+  app_config:
+    abc:
+      - a
+      - b
+      - c
+
+services:
+  app.services.service_id:
+    class: Matthias\SymfonyServiceDefinitionValidator\Tests\Functional\Fixtures\Issue49
+    arguments:
+      - "@=parameter('app_config')['abc']"
