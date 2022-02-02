@@ -30,21 +30,33 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     public function validate(\ReflectionParameter $parameter, $argument)
     {
-        if ($parameter->isArray()) {
-            if ($parameter->allowsNull() && is_null($argument)) {
-                return;
-            }
-            $this->validateArrayArgument($argument);
-        } elseif ($parameter->getClass()) {
-            $this->validateObjectArgument($parameter->getClass()->getName(), $argument, $parameter->allowsNull());
+        $parameterType = $parameter->getType();
+        if ($parameterType === null) {
+            return;
+        }
+
+        if ($parameterType->getName() === 'array') {
+            $this->validateArrayArgument($parameter, $argument);
+        } elseif (class_exists($parameterType->getName())) {
+            $this->validateObjectArgument($parameterType->getName(), $argument, $parameter->allowsNull());
         }
 
         // other arguments don't need to be or can't be validated
     }
 
-    private function validateArrayArgument($argument)
+    private function validateArrayArgument(\ReflectionParameter $parameter, $argument)
     {
-        if (!is_array($argument)) {
+        if ($parameter->allowsNull() && is_null($argument)) {
+            return;
+        }
+
+        if (class_exists('Symfony\Component\ExpressionLanguage\Expression') && $argument instanceof Expression) {
+            $this->validateExpressionArgument('array', $argument, $parameter->allowsNull());
+        } else {
+            if (is_array($argument)) {
+                return;
+            }
+
             throw new TypeHintMismatchException(sprintf(
                 'Argument of type "%s" should have been an array',
                 gettype($argument)
@@ -95,14 +107,14 @@ class ArgumentValidator implements ArgumentValidatorInterface
         $this->validateClass($className, $resultingClass);
     }
 
-    private function validateExpressionArgument($className, Expression $expression, $allowsNull)
+    private function validateExpressionArgument($type, Expression $expression, $allowsNull)
     {
         $expressionLanguage = new ExpressionLanguage();
 
         $this->validateExpressionSyntax($expression, $expressionLanguage);
 
         if ($this->evaluateExpressions) {
-            $this->validateExpressionResult($className, $expression, $allowsNull, $expressionLanguage);
+            $this->validateExpressionResult($type, $expression, $allowsNull, $expressionLanguage);
         }
     }
 
@@ -115,7 +127,7 @@ class ArgumentValidator implements ArgumentValidatorInterface
         }
     }
 
-    private function validateExpressionResult($className, Expression $expression, $allowsNull, ExpressionLanguage $expressionLanguage)
+    private function validateExpressionResult($expectedType, Expression $expression, $allowsNull, ExpressionLanguage $expressionLanguage)
     {
         try {
             $result = $expressionLanguage->evaluate($expression, array('container' => $this->containerBuilder));
@@ -130,20 +142,29 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
             throw new TypeHintMismatchException(sprintf(
                 'Argument for type-hint "%s" is an expression that evaluates to null, which is not allowed',
-                $className
+                $expectedType
             ));
         }
 
-        if (!is_object($result)) {
+        if ($expectedType === 'array' && !is_array($result)) {
             throw new TypeHintMismatchException(sprintf(
-                'Argument for type-hint "%s" is an expression that evaluates to a non-object',
-                $className
+                'Argument for type-hint "%s" is an expression that evaluates to a non-array',
+                $expectedType
             ));
         }
 
-        $resultingClass = get_class($result);
+        if (class_exists($expectedType)) {
+            if (!is_object($result)) {
+                throw new TypeHintMismatchException(sprintf(
+                    'Argument for type-hint "%s" is an expression that evaluates to a non-object',
+                    $expectedType
+                ));
+            }
 
-        $this->validateClass($className, $resultingClass);
+            $resultingClass = get_class($result);
+
+            $this->validateClass($expectedType, $resultingClass);
+        }
     }
 
     private function validateClass($expectedClassName, $actualClassName)

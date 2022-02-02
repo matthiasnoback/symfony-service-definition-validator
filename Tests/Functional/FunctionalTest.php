@@ -52,6 +52,16 @@ class FunctionalTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testIssue49(): void
+    {
+        $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__ . '/Fixtures'));
+        $loader->load('issue_49.yml');
+
+        $this->container->compile();
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testIfAServiceDefinitionWithAnExpressionArgumentIsCorrectTheContainerWillBeCompiled()
     {
         if (!class_exists('Symfony\Component\DependencyInjection\ExpressionLanguage')) {
